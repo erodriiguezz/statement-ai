@@ -1,21 +1,16 @@
 {
-  "name": "bookkeeping-bot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "radiant-ring",
+  "type": "module",
+  "version": "0.0.1",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/erodriiguezz/bookkeeping-bot.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/erodriiguezz/bookkeeping-bot/issues"
-  },
-  "homepage": "https://github.com/erodriiguezz/bookkeeping-bot#readme"
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.16.7",
+    "tailwindcss": "^4.1.18"
+  }
 }

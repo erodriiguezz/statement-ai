@@ -1,0 +1,105 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <main class="max-w-5xl mx-auto px-6 py-12">
+      <header class="mb-10">
+        <h1 class="text-3xl font-semibold mb-2">Client Statement Intake</h1>
+        <p class="text-gray-600">
+          Internal tool to ingest client statements and generate structured summaries for tax preparation.
+        </p>
+      </header>
+
+      <section class="bg-white rounded-xl shadow p-8">
+        <form class="space-y-8">
+          <!-- Client Info -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium mb-2">Client Name</label>
+              <input
+                type="text"
+                placeholder="John Doe"
+                class="w-full rounded-lg border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-2">Tax Year</label>
+              <select class="w-full rounded-lg border-gray-300 focus:border-gray-900 focus:ring-gray-900">
+                <option>2025</option>
+                <option>2024</option>
+                <option>2023</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Statement Type -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Statement Type</label>
+            <select class="w-full rounded-lg border-gray-300 focus:border-gray-900 focus:ring-gray-900">
+              <option>Bank Statement</option>
+              <option>Credit Card Statement</option>
+              <option>Payroll / Income Statement</option>
+              <option>Business Expense Statement</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <!-- File Upload -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Upload PDF Statements</label>
+            <input
+              type="file"
+              accept="application/pdf"
+              multiple
+              class="block w-full text-sm text-gray-700
+                     file:mr-4 file:py-2 file:px-4
+                     file:rounded-lg file:border-0
+                     file:bg-gray-900 file:text-white
+                     hover:file:bg-gray-800"
+            />
+            <p class="text-xs text-gray-500 mt-2">
+              Multiple PDFs supported. Files are processed temporarily and deleted after summary generation.
+            </p>
+          </div>
+
+          <!-- Consent -->
+          <div class="flex items-start gap-3">
+            <input type="checkbox" id="consent" class="mt-1" />
+            <label for="consent" class="text-sm text-gray-700">
+              I confirm this is an internal client document and authorize temporary AI processing for tax preparation.
+            </label>
+          </div>
+
+          <!-- Submit -->
+          <button
+            type="submit"
+            class="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition"
+          >
+            Process Statements
+          </button>
+        </form>
+      </section>
+
+      <!-- Output Preview -->
+      <section class="mt-12">
+        <h2 class="text-xl font-semibold mb-4">Generated Summary (Preview)</h2>
+        <div class="bg-white rounded-xl shadow p-6 text-sm text-gray-700">
+          <p class="italic text-gray-500">
+            Once processed, totals and categorized amounts will appear here (income, expenses, deductions).
+          </p>
+        </div>
+      </section>
+
+      <!-- Efficiency Note -->
+      <section class="mt-12">
+        <h2 class="text-lg font-semibold mb-3">Workflow Benefit</h2>
+        <ul class="list-disc list-inside text-sm text-gray-600 space-y-2">
+          <li>Automates statement review and math aggregation</li>
+          <li>Reduces manual data entry time from hours to minutes</li>
+          <li>Produces consistent, audit-friendly summaries</li>
+        </ul>
+      </section>
+    </main>
+</Layout>
