@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-  <main class="max-w-5xl mx-auto px-6 py-12">
+    <main class="max-w-5xl mx-auto px-6 py-12">
       <header class="mb-10">
         <h1 class="text-3xl font-semibold mb-2">Client Statement Intake</h1>
         <p class="text-gray-600">
@@ -84,11 +84,54 @@ import Layout from '../layouts/Layout.astro';
 
       <!-- Output Preview -->
       <section class="mt-12">
-        <h2 class="text-xl font-semibold mb-4">Generated Summary (Preview)</h2>
-        <div class="bg-white rounded-xl shadow p-6 text-sm text-gray-700">
-          <p class="italic text-gray-500">
-            Once processed, totals and categorized amounts will appear here (income, expenses, deductions).
-          </p>
+        <h2 class="text-xl font-semibold mb-4">Generated Summary</h2>
+
+        <div class="bg-white rounded-xl shadow p-6 mb-6">
+          <h3 class="text-lg font-medium mb-3">Totals</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500">Total Income</p>
+              <p class="text-xl font-semibold">$0.00</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500">Total Expenses</p>
+              <p class="text-xl font-semibold">$0.00</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-500">Net Result</p>
+              <p class="text-xl font-semibold">$0.00</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-6">
+          <h3 class="text-lg font-medium mb-4">Categorized Breakdown</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead class="border-b">
+                <tr class="text-left">
+                  <th class="py-2">Category</th>
+                  <th class="py-2">Amount</th>
+                  <th class="py-2">Type</th>
+                  <th class="py-2">Notes</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y">
+                <tr>
+                  <td class="py-2">Office Supplies</td>
+                  <td class="py-2">$0.00</td>
+                  <td class="py-2">Expense</td>
+                  <td class="py-2 text-gray-500">Auto-detected</td>
+                </tr>
+                <tr>
+                  <td class="py-2">Meals</td>
+                  <td class="py-2">$0.00</td>
+                  <td class="py-2">Expense</td>
+                  <td class="py-2 text-gray-500">Possible deductible</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
