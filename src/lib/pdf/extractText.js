@@ -1,11 +1,11 @@
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/esm/pdf";
-import pdfWorker from "pdfjs-dist/esm/pdf.worker.entry";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
+import pdfWorker from "pdfjs-dist/legacy/build/pdf.worker.min.js";
 
-GlobalWorkerOptions.workerSrc = pdfWorker;
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 export default async function extractText(file) {
   const arrayBuffer = await file.arrayBuffer();
-  const pdf = await getDocument({ data: arrayBuffer }).promise;
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
   const pages = [];
 
