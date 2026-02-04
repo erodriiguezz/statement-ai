@@ -37,7 +37,7 @@ export default function Home() {
 
           <button
             type="submit"
-            className="inline-block w-auto bg-gray-900 text-white py-3 px-3 rounded-lg font-medium hover:bg-gray-800 transition cursor-pointer"
+            className="inline-block w-auto bg-gray-900 text-white text-sm py-3 px-3 rounded-lg font-medium hover:bg-gray-800 transition cursor-pointer"
           >
             Process Statements
           </button>
