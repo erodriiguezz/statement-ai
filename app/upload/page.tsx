@@ -2,47 +2,40 @@
 
 import { useState } from "react";
 
-export default function Home() {
-  const [file, setFile] = useState(null);
+export default function UploadPage() {
+  const [result, setResult] = useState<any>(null);
 
-  const onSubmit = async (e) => {
+  async function handleUpload(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const file = (e.currentTarget.file as HTMLInputElement).files?.[0];
+    if (!file) return;
 
-    console.log(file);
-  };
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/statement", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("API ERROR:", text);
+      throw new Error("Statement upload failed");
+    }
+
+    const data = await res.json();
+    console.log(data);
+  }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <form className="space-y-8" onSubmit={onSubmit}>
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Upload PDF Statements
-            </label>
+    <div style={{ padding: 40 }}>
+      <form onSubmit={handleUpload}>
+        <input type="file" name="file" accept="application/pdf" />
+        <button type="submit">Upload</button>
+      </form>
 
-            <input
-              type="file"
-              name="file"
-              accept="application/pdf"
-              multiple
-              className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gray-900 file:text-white hover:file:bg-gray-800 file:cursor-pointer"
-              onChange={(e) => setFile(e.target.files?.[0])}
-            />
-
-            <p className="text-xs text-gray-500 mt-2">
-              Multiple PDFs supported. Files are processed temporarily and
-              deleted after summary generation.
-            </p>
-          </div>
-
-          <button
-            type="submit"
-            className="inline-block w-auto bg-gray-900 text-white text-sm py-3 px-3 rounded-lg font-medium hover:bg-gray-800 transition cursor-pointer"
-          >
-            Process Statements
-          </button>
-        </form>
-      </main>
+      <pre>{JSON.stringify(result, null, 2)}</pre>
     </div>
   );
 }
