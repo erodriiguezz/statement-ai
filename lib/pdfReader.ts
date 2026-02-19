@@ -53,22 +53,22 @@
 //   return rows;
 // }
 
-let pdfjsLib: any;
-
-if (typeof window === "undefined") {
-  pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
-}
-
 export async function extractTextFromPDF(buffer: Buffer) {
+  // Prevent Next.js bundling issues (critical for Vercel)
+  const pdfjsLib = await (eval(
+    'import("pdfjs-dist/legacy/build/pdf.js")',
+  ) as Promise<any>);
+
   const uint8Array = new Uint8Array(buffer);
 
-  pdfjsLib.GlobalWorkerOptions.workerSrc = undefined;
-
-  const pdf = await pdfjsLib.getDocument({
+  const loadingTask = pdfjsLib.getDocument({
     data: uint8Array,
+    disableWorker: true, // server environment
     useSystemFonts: true,
     isEvalSupported: false,
-  }).promise;
+  });
+
+  const pdf = await loadingTask.promise;
 
   let rows: string[] = [];
 
@@ -76,7 +76,7 @@ export async function extractTextFromPDF(buffer: Buffer) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
 
-    rows.push(...content.items.map((item: any) => item.str));
+    rows.push(...content.items.map((item: any) => item.str).filter(Boolean));
   }
 
   return rows;
