@@ -2,37 +2,46 @@ import { NextRequest, NextResponse } from "next/server";
 import { extractTextFromPDF } from "@/lib/pdfReader";
 import { parseTransactions } from "@/lib/transactionParser";
 import { generateScheduleC } from "@/lib/ai";
+import { packageForAI, Transaction } from "@/lib/aiPackager";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as File;
+    const files = formData.getAll("pdfs") as File[];
 
-    if (!file) {
-      return NextResponse.json({ error: "No file" }, { status: 400 });
+    if (!files.length) {
+      return NextResponse.json({ error: "No PDFs uploaded" }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    let allTransactions = [];
 
-    // 1️⃣ Extract rows from PDF
-    const rows = await extractTextFromPDF(buffer);
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
 
-    // 2️⃣ Convert to transactions
-    const transactions = parseTransactions(rows);
+      const rows = await extractTextFromPDF(buffer);
 
-    // 3️⃣ Send to AI
-    const scheduleC = await generateScheduleC(transactions);
+      const transactions = parseTransactions(rows);
+
+      allTransactions.push(...transactions);
+    }
+
+    // Only expenses for Schedule C
+    const expenseTransactions = allTransactions.filter(
+      (t) => t.type === "debit",
+    );
+
+    const packaged = packageForAI(expenseTransactions);
 
     return NextResponse.json({
-      rows,
-      transactions,
-      scheduleC,
+      transactionCount: allTransactions.length,
+      expenseCount: expenseTransactions.length,
+      packaged,
     });
   } catch (err) {
     console.error(err);
-
-    return NextResponse.json({ error: "Processing failed" }, { status: 500 });
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

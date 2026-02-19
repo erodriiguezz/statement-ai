@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bookkeeping Bot",
+  title: "Statement AI",
   description: "",
 };
 
