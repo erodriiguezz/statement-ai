@@ -28,7 +28,6 @@ export async function POST(req: NextRequest) {
       allTransactions.push(...transactions);
     }
 
-    // Only expenses for Schedule C
     const expenseTransactions = allTransactions.filter(
       (t) => t.type === "debit",
     );
