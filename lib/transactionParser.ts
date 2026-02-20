@@ -32,7 +32,6 @@ export function parseTransactions(tokens: string[]): ParsedTransaction[] {
       continue;
     }
 
-    // Detect date
     if (DATE_REGEX.test(token) && section) {
       const date = token;
 
@@ -59,7 +58,6 @@ export function parseTransactions(tokens: string[]): ParsedTransaction[] {
         j++;
       }
 
-      // Optional extra line
       if (j < tokens.length) {
         const next = tokens[j]?.trim();
 
