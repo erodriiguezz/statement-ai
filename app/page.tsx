@@ -32,9 +32,7 @@ export default function Home() {
     <main className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
       <div className="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800">
-            Schedule C Generator
-          </h1>
+          <h1 className="text-2xl font-semibold text-gray-800">Statement AI</h1>
           <p className="text-gray-500 text-sm mt-1">
             Upload one or more bank statements to classify transactions.
           </p>
