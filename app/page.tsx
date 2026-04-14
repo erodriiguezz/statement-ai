@@ -86,29 +86,4 @@ export default function Home() {
       </div>
     </main>
   );
-
-  // return (
-  //   <main style={{ padding: 40 }}>
-  //     <h1>Schedule C Generator</h1>
-
-  //     <input
-  //       type="file"
-  //       accept="application/pdf"
-  //       multiple
-  //       onChange={(e) => {
-  //         if (e.target.files) {
-  //           setFiles(Array.from(e.target.files));
-  //         }
-  //       }}
-  //     />
-
-  //     <button onClick={handleUpload}>Submit</button>
-
-  //     {loading && <p>Processing...</p>}
-
-  //     {result && (
-  //       <pre style={{ marginTop: 20 }}>{JSON.stringify(result, null, 2)}</pre>
-  //     )}
-  //   </main>
-  // );
 }
