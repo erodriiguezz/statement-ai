@@ -29,7 +29,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+    <main className="min-h-screen flex items-center justify-center p-8">
       <div className="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-8 space-y-6">
         <div>
           <h1 className="text-2xl font-semibold text-gray-800">Statement AI</h1>
