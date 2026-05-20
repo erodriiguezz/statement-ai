@@ -29,61 +29,62 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-8">
-      <div className="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-8 space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-800">Statement AI</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Upload one or more bank statements to classify transactions.
-          </p>
-        </div>
+    <div>hello world</div>
+    // <main className="min-h-screen flex items-center justify-center p-8">
+    //   <div className="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-8 space-y-6">
+    //     <div>
+    //       <h1 className="text-2xl font-semibold text-gray-800">Statement AI</h1>
+    //       <p className="text-gray-500 text-sm mt-1">
+    //         Upload one or more bank statements to classify transactions.
+    //       </p>
+    //     </div>
 
-        {/* File Upload */}
-        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition">
-          <input
-            type="file"
-            accept="application/pdf"
-            multiple
-            className="block w-full text-sm text-gray-600
-                       file:mr-4 file:py-2 file:px-4
-                       file:rounded-lg file:border-0
-                       file:text-sm file:font-medium
-                       file:bg-blue-50 file:text-blue-700
-                       hover:file:bg-blue-100"
-            onChange={(e) => {
-              if (e.target.files) {
-                setFiles(Array.from(e.target.files));
-              }
-            }}
-          />
-          <p className="text-xs text-gray-400 mt-2">
-            PDF only • Multiple files supported
-          </p>
-        </div>
+    //     {/* File Upload */}
+    //     <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition">
+    //       <input
+    //         type="file"
+    //         accept="application/pdf"
+    //         multiple
+    //         className="block w-full text-sm text-gray-600
+    //                    file:mr-4 file:py-2 file:px-4
+    //                    file:rounded-lg file:border-0
+    //                    file:text-sm file:font-medium
+    //                    file:bg-blue-50 file:text-blue-700
+    //                    hover:file:bg-blue-100"
+    //         onChange={(e) => {
+    //           if (e.target.files) {
+    //             setFiles(Array.from(e.target.files));
+    //           }
+    //         }}
+    //       />
+    //       <p className="text-xs text-gray-400 mt-2">
+    //         PDF only • Multiple files supported
+    //       </p>
+    //     </div>
 
-        {/* Submit */}
-        <button
-          onClick={handleUpload}
-          className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium
-                     hover:bg-blue-700 active:scale-[0.98] transition"
-        >
-          Submit
-        </button>
+    //     {/* Submit */}
+    //     <button
+    //       onClick={handleUpload}
+    //       className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium
+    //                  hover:bg-blue-700 active:scale-[0.98] transition"
+    //     >
+    //       Submit
+    //     </button>
 
-        {/* Loading */}
-        {loading && (
-          <div className="text-center text-gray-500">
-            Processing statements...
-          </div>
-        )}
+    //     {/* Loading */}
+    //     {loading && (
+    //       <div className="text-center text-gray-500">
+    //         Processing statements...
+    //       </div>
+    //     )}
 
-        {/* Result */}
-        {result && (
-          <div className="bg-gray-100 text-gray-900 rounded-xl p-4 overflow-auto max-h-96">
-            <pre className="text-xs">{JSON.stringify(result, null, 2)}</pre>
-          </div>
-        )}
-      </div>
-    </main>
+    //     {/* Result */}
+    //     {result && (
+    //       <div className="bg-gray-100 text-gray-900 rounded-xl p-4 overflow-auto max-h-96">
+    //         <pre className="text-xs">{JSON.stringify(result, null, 2)}</pre>
+    //       </div>
+    //     )}
+    //   </div>
+    // </main>
   );
 }
