@@ -9,9 +9,9 @@ export default function Home() {
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
   const steps = [
-    { id: 1, icon: FileUp },
-    { id: 2, icon: File },
-    { id: 3, icon: ChartPie },
+    { id: 1, icon: FileUp, text: "Upload" },
+    { id: 2, icon: File, text: "Review" },
+    { id: 3, icon: ChartPie, text: "Analyze" },
   ];
 
   const handleStepClick = (stepIndex: number) => {
@@ -24,7 +24,6 @@ export default function Home() {
         steps={steps}
         activeStep={activeTab}
         completedSteps={completedSteps}
-        onStepClick={handleStepClick}
       />
     </div>
   );
