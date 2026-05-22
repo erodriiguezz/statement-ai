@@ -23,7 +23,7 @@ export default function Stepper({
     const isActive = activeStep === stepIndex;
 
     if (isCompleted) {
-      return "bg-green-500 border-2 border-green-600";
+      return "bg-primary border-2 border-primary";
     }
     if (isActive) {
       return "bg-primary border-2 border-primary";
