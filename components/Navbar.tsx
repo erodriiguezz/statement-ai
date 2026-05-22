@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Bot } from "lucide-react";
 
 export default function Navbar() {
