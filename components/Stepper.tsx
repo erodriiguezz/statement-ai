@@ -25,11 +25,7 @@ export default function Stepper({
     let icon = "text-gray-600";
     let text = "text-gray-600";
 
-    if (isCompleted) {
-      container = "bg-green-500 border-2 border-green-600";
-      icon = "text-white";
-      text = "text-green-600";
-    } else if (isActive) {
+    if (isCompleted || isActive) {
       container = "bg-primary border-2 border-primary";
       icon = "text-white";
       text = "text-primary";
@@ -39,14 +35,14 @@ export default function Stepper({
   };
 
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex items-center justify-between gap-4 mb-12">
       {steps.map((step, index) => {
         const Icon = step.icon;
         const { container, icon, text } = getStepClasses(index);
 
         return (
           <div key={step.id} className="flex flex-col items-center">
-            <div className={`p-4 rounded-full transition-all ${container}`}>
+            <div className={`p-2 rounded-full transition-all ${container}`}>
               <Icon className={icon} size={20} />
             </div>
 
