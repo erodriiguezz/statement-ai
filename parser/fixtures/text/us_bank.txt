@@ -1,0 +1,13 @@
+U.S. Bank National Association
+usbank.com
+Statement Period Ending 01/31/2025
+
+DEPOSITS
+Date Description Amount Balance
+01/04 DEPOSIT 900.00 1,900.00
+01/19 ACH CREDIT INVOICE PAYMENT 1,100.00 2,500.00
+
+OTHER WITHDRAWALS
+Date Description Amount Balance
+01/10 DEBIT CARD PURCHASE SUPPLIES 45.50 1,854.50
+01/25 ONLINE PAYMENT VENDOR 250.00 2,250.00

@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Python parser
+parser/.venv/
+parser/__pycache__/
+parser/**/__pycache__/
+parser/.pytest_cache/
+parser/fixtures/raw/*
+!parser/fixtures/raw/.gitkeep

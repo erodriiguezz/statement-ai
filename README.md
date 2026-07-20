@@ -141,3 +141,61 @@ All personnel must acknowledge and adhere to this procedure when handling client
 ## 🛡️ Key Principle
 
 **Zero Retention. Full Privacy. Secure Processing.**
+
+---
+
+## Developer setup (PDF parser)
+
+The app extracts transactions by spawning a local Python script (`parser/parse_statement.py`) via `PYTHON_PATH` (default `python3`).
+
+### Requirements
+
+- Python 3.9+
+- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for scanned/image-only PDFs  
+  - macOS: `brew install tesseract`
+- Node.js dependencies: `npm install`
+
+### Install Python deps
+
+```bash
+python3 -m venv parser/.venv
+source parser/.venv/bin/activate
+pip install -r parser/requirements.txt
+```
+
+Point the Next.js app at the venv if needed:
+
+```bash
+# .env.local
+PYTHON_PATH=/absolute/path/to/statement-ai/parser/.venv/bin/python
+```
+
+### CLI smoke test
+
+```bash
+parser/.venv/bin/python parser/parse_statement.py path/to/statement.pdf
+```
+
+Output shape:
+
+```json
+{ "transactions": [{ "id": "...", "date": "YYYY-MM-DD", "description": "...", "amount": -12.34 }] }
+```
+
+Positive amounts are credits/income; negative amounts are debits/expenses.
+
+### Supported statement layouts
+
+Layout profiles cover common retail/business checking formats for:
+
+Chase, Bank of America, Wells Fargo, Citibank, U.S. Bank, Capital One, PNC, Truist, TD Bank, plus a generic/regional section-based fallback.
+
+Digital text layers are preferred; sparse/image pages use Tesseract automatically.
+
+### Tests
+
+Place real PDFs in `parser/fixtures/raw/` (gitignored). Synthetic bank text fixtures live in `parser/fixtures/text/`.
+
+```bash
+cd parser && .venv/bin/pytest -q
+```

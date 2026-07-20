@@ -1,0 +1,25 @@
+{
+  "profile_id": "us_bank",
+  "transactions": [
+    {
+      "date": "2025-01-04",
+      "description": "DEPOSIT",
+      "amount": 900.0
+    },
+    {
+      "date": "2025-01-10",
+      "description": "DEBIT CARD PURCHASE SUPPLIES",
+      "amount": -45.5
+    },
+    {
+      "date": "2025-01-19",
+      "description": "ACH CREDIT INVOICE PAYMENT",
+      "amount": 1100.0
+    },
+    {
+      "date": "2025-01-25",
+      "description": "ONLINE PAYMENT VENDOR",
+      "amount": -250.0
+    }
+  ]
+}

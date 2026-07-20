@@ -1,0 +1,25 @@
+{
+  "profile_id": "truist",
+  "transactions": [
+    {
+      "date": "2025-04-05",
+      "description": "BUSINESS DEPOSIT",
+      "amount": 2200.0
+    },
+    {
+      "date": "2025-04-09",
+      "description": "DEBIT PURCHASE HARDWARE STORE",
+      "amount": -76.4
+    },
+    {
+      "date": "2025-04-18",
+      "description": "ZELLE PAYMENT RECEIVED",
+      "amount": 150.0
+    },
+    {
+      "date": "2025-04-27",
+      "description": "ACH PAYMENT INSURANCE",
+      "amount": -320.0
+    }
+  ]
+}
