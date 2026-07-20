@@ -1,0 +1,25 @@
+{
+  "profile_id": "capital_one",
+  "transactions": [
+    {
+      "date": "2025-02-03",
+      "description": "MOBILE CHECK DEPOSIT",
+      "amount": 750.0
+    },
+    {
+      "date": "2025-02-07",
+      "description": "PURCHASE AMAZON",
+      "amount": -42.99
+    },
+    {
+      "date": "2025-02-14",
+      "description": "INTEREST PAYMENT",
+      "amount": 1.25
+    },
+    {
+      "date": "2025-02-21",
+      "description": "TRANSFER TO SAVINGS",
+      "amount": -200.0
+    }
+  ]
+}

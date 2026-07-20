@@ -1,0 +1,154 @@
+{
+  "transactions": [
+    {
+      "date": "2025-01-17",
+      "description": "Online Transfer From Chk ...5120 Transaction#: 23420135430",
+      "amount": 50000.0
+    },
+    {
+      "date": "2025-01-17",
+      "description": "Zelle Payment To Aaaaaaaalaurita Jpm99Av7S03L",
+      "amount": -2139.0
+    },
+    {
+      "date": "2025-01-17",
+      "description": "Zelle Payment To Blankita Limpieza Jpm99Av7Rid3",
+      "amount": -650.0
+    },
+    {
+      "date": "2025-01-17",
+      "description": "Zelle Payment To Kiki Jpm99Av6Y6Qg",
+      "amount": -600.0
+    },
+    {
+      "date": "2025-01-17",
+      "description": "Zelle Payment To Rafael Marilin Jpm99Av6JI20",
+      "amount": -600.0
+    },
+    {
+      "date": "2025-01-17",
+      "description": "Zelle Payment To Vidal Jpm99Av6J70Y",
+      "amount": -1100.0
+    },
+    {
+      "date": "2025-01-21",
+      "description": "01/18 Online Realtime Transfer To Rogelio 1675 Transaction#: 23434384765 Reference 9434384765Rx",
+      "amount": -20000.0
+    },
+    {
+      "date": "2025-01-21",
+      "description": "01/19 Online Transfer To Chk ...9413 Transaction#: 23443709312",
+      "amount": -1000.0
+    },
+    {
+      "date": "2025-01-21",
+      "description": "01/21 Online Domestic Wire Transfer Via: Wells Fargo NA/121000248 A/C: Aba/063107513 Imad: 0121Mmgfmp2N006880 Trn: 33030",
+      "amount": -20000.0
+    },
+    {
+      "date": "2025-01-21",
+      "description": "01/21 Online Transfer To Chk ...9413 Transaction#: 23458295503",
+      "amount": -1000.0
+    },
+    {
+      "date": "2025-01-21",
+      "description": "Orig CO Name:Gusto Orig 1D:9138864003 Desc Date:250121 CO Entry Ind Name:G & R Group Insurance 6Semjnbo6FT Tm: 021865187",
+      "amount": 0.01
+    },
+    {
+      "date": "2025-01-21",
+      "description": "Zelle Payment To Ariel Martinez Dinero Matanzas Jpm99Avhv6l6",
+      "amount": -450.0
+    },
+    {
+      "date": "2025-01-22",
+      "description": "Zelle Payment To Ariel Martinez Dinero Matanzas Jpm99Avnt35R",
+      "amount": -220.0
+    },
+    {
+      "date": "2025-01-23",
+      "description": "01/23 Online Transfer To Chk ...9413 Transaction#: 23476993262",
+      "amount": -1000.0
+    },
+    {
+      "date": "2025-01-23",
+      "description": "Orig CO Name:The Excellent He Orig ID:9138864001 Desc Date:250123 CO Entry 1D:6Semk3Fbh15 Ind Name:G & R Group Insurance",
+      "amount": 8800.0
+    },
+    {
+      "date": "2025-01-23",
+      "description": "Zelle Payment To Aaaaaanita Jpm99Avrpd7",
+      "amount": -300.0
+    },
+    {
+      "date": "2025-01-24",
+      "description": "Zelle Payment To Rafael Marilin Jom99Avwj5Gf",
+      "amount": -600.0
+    },
+    {
+      "date": "2025-01-24",
+      "description": "Zelle Payment To Vidal Jpm99Avwj4Du",
+      "amount": -1000.0
+    },
+    {
+      "date": "2025-01-29",
+      "description": "Zelle Payment To Blankita Limpieza Jpm99Awbxskq",
+      "amount": -200.0
+    },
+    {
+      "date": "2025-01-29",
+      "description": "Zelle Payment To Kiki Jpm99Awcil4M",
+      "amount": -300.0
+    },
+    {
+      "date": "2025-01-29",
+      "description": "Zelle Payment To Yuliema Jom99Awdmghv",
+      "amount": -125.0
+    },
+    {
+      "date": "2025-01-30",
+      "description": "Zelle Payment To Maduro 23546786047",
+      "amount": -2100.0
+    },
+    {
+      "date": "2025-01-31",
+      "description": "01/31 Online Realtime Transfer To Rogelio 1675 Transaction#: 23566501554 Reference 9566501554Rx",
+      "amount": -10000.0
+    },
+    {
+      "date": "2025-01-31",
+      "description": "01/31 Online Realtime Transfer To Rogelio 1675 Transaction#: 23566587527 Reference 9566587527Rx",
+      "amount": -5000.0
+    },
+    {
+      "date": "2025-01-31",
+      "description": "01/31 Online Realtime Transfer To Rogelio 1675 Transaction#: 23566633754 Reference 9566633754Rx",
+      "amount": -100.0
+    },
+    {
+      "date": "2025-01-31",
+      "description": "01/31 Online Realtime Transfer To Rogelio 1675 Transaction#: 23566799089 Reference 9566799089Rx",
+      "amount": -5000.0
+    },
+    {
+      "date": "2025-01-31",
+      "description": "Online Transfer From Chk ...5120 Transaction#: 23566480536",
+      "amount": 10000.0
+    },
+    {
+      "date": "2025-01-31",
+      "description": "Orig CO Name:The Excellent He Orig 1ID:9138864001 Desc Date:250131 CO Entry ID:6Semk3Hq7K2 Ind Name:G & R Group Insuranc",
+      "amount": 8800.0
+    },
+    {
+      "date": "2025-01-31",
+      "description": "Zelle Payment To Rafael Marilin Jpmog9Awm1Prz",
+      "amount": -400.0
+    },
+    {
+      "date": "2025-01-31",
+      "description": "Zelle Payment To Vidal Jpm99Awm26Qj",
+      "amount": -1000.0
+    }
+  ]
+}

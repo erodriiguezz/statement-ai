@@ -1,0 +1,30 @@
+{
+  "profile_id": "wells_fargo",
+  "transactions": [
+    {
+      "date": "2025-01-05",
+      "description": "MOBILE DEPOSIT",
+      "amount": 1250.0
+    },
+    {
+      "date": "2025-01-08",
+      "description": "POS PURCHASE OFFICE DEPOT",
+      "amount": -89.45
+    },
+    {
+      "date": "2025-01-12",
+      "description": "ACH CREDIT ACME PAYROLL",
+      "amount": 3400.0
+    },
+    {
+      "date": "2025-01-15",
+      "description": "ONLINE BILL PAY ELECTRIC CO",
+      "amount": -210.0
+    },
+    {
+      "date": "2025-01-22",
+      "description": "ATM WITHDRAWAL",
+      "amount": -100.0
+    }
+  ]
+}

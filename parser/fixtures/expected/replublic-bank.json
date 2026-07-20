@@ -1,0 +1,29 @@
+{
+  "transactions": [
+    {
+      "date": "2025-01-07",
+      "description": "TRI-COUNTYECTN/PAYMENT YOLANDA CORVO",
+      "amount": -622.27
+    },
+    {
+      "date": "2025-01-22",
+      "description": "PIEDMONT NATURAL/BILL PAY 610002056618 SEBASTIAN MILANES",
+      "amount": -750.95
+    },
+    {
+      "date": "2025-01-27",
+      "description": "Deposit",
+      "amount": 3000.0
+    },
+    {
+      "date": "2025-01-28",
+      "description": "Business Mobile Deposit",
+      "amount": 1212.69
+    },
+    {
+      "date": "2025-01-28",
+      "description": "Business Mobile Deposit",
+      "amount": 1187.0
+    }
+  ]
+}

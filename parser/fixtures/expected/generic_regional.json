@@ -1,0 +1,25 @@
+{
+  "profile_id": "generic",
+  "transactions": [
+    {
+      "date": "2025-06-05",
+      "description": "VENDOR ACH PAYMENT PAYEE NAME HERE",
+      "amount": -125.5
+    },
+    {
+      "date": "2025-06-10",
+      "description": "CUSTOMER PAYMENT",
+      "amount": 500.0
+    },
+    {
+      "date": "2025-06-18",
+      "description": "BILL PAY UTILITIES",
+      "amount": -80.0
+    },
+    {
+      "date": "2025-06-22",
+      "description": "MOBILE DEPOSIT",
+      "amount": 250.0
+    }
+  ]
+}

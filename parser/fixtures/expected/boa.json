@@ -1,0 +1,49 @@
+{
+  "transactions": [
+    {
+      "date": "2025-01-03",
+      "description": "BKOFAMERICA BC 01/03 #000004195 FR CHKG",
+      "amount": 5500.0
+    },
+    {
+      "date": "2025-01-08",
+      "description": "COMPREHENSIVE HE DES:PAYROLL 1D:0020562FCBCFB4C INDN:M AND S FAST CLEANING CO 1D:1462800242 PPD",
+      "amount": 7000.0
+    },
+    {
+      "date": "2025-01-13",
+      "description": "THE HOME DEPOT 01/12 #000046744 PURCHASE THE HOME DEPOT #6 MIAMI = FL",
+      "amount": -105.83
+    },
+    {
+      "date": "2025-01-15",
+      "description": "1001 7",
+      "amount": -2000.0
+    },
+    {
+      "date": "2025-01-16",
+      "description": "FAMILY DOLLAR 01/16 #000078346 PURCHASE 775 NW119THST NORTHMIAME FLO",
+      "amount": -24.02
+    },
+    {
+      "date": "2025-01-21",
+      "description": "CHECKCARD 0121 METRO BY T MOB BELLEVUE WA CKCD 4814 XXXXXXXXXXXX9948 XXXX 7 XXXX XXX 9948 a a a - oo",
+      "amount": -106.0
+    },
+    {
+      "date": "2025-01-21",
+      "description": "FAMILY DOLLAR 01/21 #000079811 PURCHASE 775 NW 119TH ST NORTH MIAMI FL",
+      "amount": -12.6
+    },
+    {
+      "date": "2025-01-22",
+      "description": "CHECKCARD 0122 7-ELEVEN Miami FL CKCD 5542 XXXXXXXXXXXX9948 XXXX XXXX XXXX 9948 a a oo oe a",
+      "amount": -25.66
+    },
+    {
+      "date": "2025-01-28",
+      "description": "IRS DES:USATAXPYMT 1D:200542823358038 INDN:M AND S FAST CLEANING CO 1D:3387702000 CCD - oo a - a",
+      "amount": -546.0
+    }
+  ]
+}

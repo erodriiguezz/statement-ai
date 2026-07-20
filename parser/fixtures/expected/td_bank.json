@@ -1,0 +1,25 @@
+{
+  "profile_id": "td_bank",
+  "transactions": [
+    {
+      "date": "2025-05-06",
+      "description": "DIRECT DEPOSIT PAYROLL",
+      "amount": 3100.0
+    },
+    {
+      "date": "2025-05-10",
+      "description": "ONLINE PAYMENT CREDIT CARD",
+      "amount": -400.0
+    },
+    {
+      "date": "2025-05-20",
+      "description": "MOBILE DEPOSIT",
+      "amount": 500.0
+    },
+    {
+      "date": "2025-05-28",
+      "description": "DEBIT CARD RESTAURANT",
+      "amount": -55.75
+    }
+  ]
+}

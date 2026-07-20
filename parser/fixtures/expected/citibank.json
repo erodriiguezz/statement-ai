@@ -1,0 +1,25 @@
+{
+  "profile_id": "citibank",
+  "transactions": [
+    {
+      "date": "2025-01-03",
+      "description": "DIRECT DEPOSIT EMPLOYER 0.00",
+      "amount": 2500.0
+    },
+    {
+      "date": "2025-01-07",
+      "description": "CHECKCARD GROCERY STORE",
+      "amount": -65.2
+    },
+    {
+      "date": "2025-01-18",
+      "description": "ZELLE FROM CLIENT 0.00",
+      "amount": 400.0
+    },
+    {
+      "date": "2025-01-20",
+      "description": "ONLINE TRANSFER",
+      "amount": -300.0
+    }
+  ]
+}

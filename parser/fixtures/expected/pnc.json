@@ -1,0 +1,25 @@
+{
+  "profile_id": "pnc",
+  "transactions": [
+    {
+      "date": "2025-03-02",
+      "description": "DEPOSIT",
+      "amount": 1000.0
+    },
+    {
+      "date": "2025-03-08",
+      "description": "CHECKCARD GAS STATION",
+      "amount": -48.1
+    },
+    {
+      "date": "2025-03-15",
+      "description": "ACH CREDIT CLIENT PAYMENT",
+      "amount": 600.0
+    },
+    {
+      "date": "2025-03-22",
+      "description": "ONLINE BILL PAY RENT",
+      "amount": -1200.0
+    }
+  ]
+}
