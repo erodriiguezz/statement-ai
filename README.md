@@ -146,16 +146,13 @@ All personnel must acknowledge and adhere to this procedure when handling client
 
 ## Developer setup (PDF parser)
 
-The app extracts transactions by spawning a local Python script (`parser/parse_statement.py`) via `PYTHON_PATH` (default `python3`).
+Locally, the app spawns `parser/parse_statement.py`. On Vercel, set `PARSER_SERVICE_URL` to a Render-hosted parser API instead (Python/Tesseract are not available on Vercel).
 
-### Requirements
+### Local requirements
 
 - Python 3.9+
-- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for scanned/image-only PDFs  
-  - macOS: `brew install tesseract`
-- Node.js dependencies: `npm install`
-
-### Install Python deps
+- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) (`brew install tesseract`)
+- `npm install`
 
 ```bash
 python3 -m venv parser/.venv
@@ -163,38 +160,44 @@ source parser/.venv/bin/activate
 pip install -r parser/requirements.txt
 ```
 
-Point the Next.js app at the venv if needed:
-
 ```bash
-# .env.local
+# .env.local (local only)
 PYTHON_PATH=/absolute/path/to/statement-ai/parser/.venv/bin/python
 ```
 
-### CLI smoke test
+### CLI / API smoke tests
 
 ```bash
 parser/.venv/bin/python parser/parse_statement.py path/to/statement.pdf
+
+# HTTP API (same code Render runs)
+cd parser && ../parser/.venv/bin/uvicorn server:app --reload --port 10000
+curl -s http://127.0.0.1:10000/health
 ```
 
-Output shape:
+### Deploy parser on Render (for Vercel)
 
-```json
-{ "transactions": [{ "id": "...", "date": "YYYY-MM-DD", "description": "...", "amount": -12.34 }] }
-```
+1. Push this repo (includes `parser/Dockerfile` + `render.yaml`).
+2. In Render: **New → Blueprint** (or Web Service) → select the repo.
+3. Service settings that matter:
+   - **Root directory:** `parser`
+   - **Runtime:** Docker (`Dockerfile` in `parser/`)
+   - **Health check path:** `/health`
+4. Copy the generated `PARSER_API_KEY` from Render env vars.
+5. After deploy, note the service URL, e.g. `https://statement-ai-parser.onrender.com`.
+6. In Vercel project → Settings → Environment Variables:
+   - `PARSER_SERVICE_URL` = `https://statement-ai-parser.onrender.com` (no trailing slash)
+   - `PARSER_API_KEY` = same value as Render
+   - `OPENAI_API_KEY` = your OpenAI key (for Schedule C)
+7. Redeploy the Vercel app.
 
-Positive amounts are credits/income; negative amounts are debits/expenses.
+**Cold starts:** Render free tier sleeps. The first parse after idle can take 30–60s; `/api/parse` allows up to 120s.
 
 ### Supported statement layouts
 
-Layout profiles cover common retail/business checking formats for:
-
-Chase, Bank of America, Wells Fargo, Citibank, U.S. Bank, Capital One, PNC, Truist, TD Bank, plus a generic/regional section-based fallback.
-
-Digital text layers are preferred; sparse/image pages use Tesseract automatically.
+Chase, Bank of America, Wells Fargo, Citibank, U.S. Bank, Capital One, PNC, Truist, TD Bank, plus a generic/regional fallback. Scanned PDFs use Tesseract.
 
 ### Tests
-
-Place real PDFs in `parser/fixtures/raw/` (gitignored). Synthetic bank text fixtures live in `parser/fixtures/text/`.
 
 ```bash
 cd parser && .venv/bin/pytest -q

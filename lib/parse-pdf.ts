@@ -11,7 +11,82 @@ function resolvePythonCommand(): string {
   return process.env.PYTHON_PATH || "python3";
 }
 
+function resolveParserServiceUrl(): string | null {
+  const raw = process.env.PARSER_SERVICE_URL?.trim();
+  if (!raw) {
+    return null;
+  }
+  return raw.replace(/\/$/, "");
+}
+
 export async function parsePdfBuffer(
+  buffer: Buffer,
+  filename: string,
+): Promise<Transaction[]> {
+  const serviceUrl = resolveParserServiceUrl();
+  if (serviceUrl) {
+    return parsePdfViaRemoteService(buffer, filename, serviceUrl);
+  }
+  return parsePdfViaLocalPython(buffer, filename);
+}
+
+async function parsePdfViaRemoteService(
+  buffer: Buffer,
+  filename: string,
+  serviceUrl: string,
+): Promise<Transaction[]> {
+  const form = new FormData();
+  const blob = new Blob([new Uint8Array(buffer)], { type: "application/pdf" });
+  form.append("file", blob, filename.replace(/[^\w.-]/g, "_"));
+
+  const headers: HeadersInit = {};
+  const apiKey = process.env.PARSER_API_KEY?.trim();
+  if (apiKey) {
+    headers.Authorization = `Bearer ${apiKey}`;
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 120_000);
+
+  try {
+    const response = await fetch(`${serviceUrl}/parse`, {
+      method: "POST",
+      headers,
+      body: form,
+      signal: controller.signal,
+    });
+
+    const payload = (await response.json().catch(() => ({}))) as {
+      transactions?: Transaction[];
+      detail?: string | Array<{ msg?: string }>;
+      error?: string;
+    };
+
+    if (!response.ok) {
+      const detail =
+        typeof payload.detail === "string"
+          ? payload.detail
+          : Array.isArray(payload.detail)
+            ? payload.detail.map((item) => item.msg).filter(Boolean).join("; ")
+            : payload.error;
+      throw new Error(
+        detail ||
+          `Parser service error (${response.status}). Check PARSER_SERVICE_URL on Vercel and Render logs.`,
+      );
+    }
+
+    return payload.transactions ?? [];
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("Parser service timed out after 120s.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function parsePdfViaLocalPython(
   buffer: Buffer,
   filename: string,
 ): Promise<Transaction[]> {

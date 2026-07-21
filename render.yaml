@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: statement-ai-parser
+    runtime: docker
+    plan: free
+    rootDir: parser
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: PARSER_API_KEY
+        generateValue: true
+      - key: PARSER_MAX_UPLOAD_BYTES
+        value: "20971520"
