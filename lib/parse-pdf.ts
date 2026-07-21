@@ -19,6 +19,11 @@ function resolveParserServiceUrl(): string | null {
   return raw.replace(/\/$/, "");
 }
 
+function resolveParserApiKey(): string | null {
+  const key = process.env.PARSER_API_KEY?.trim();
+  return key || null;
+}
+
 export async function parsePdfBuffer(
   buffer: Buffer,
   filename: string,
@@ -30,23 +35,54 @@ export async function parsePdfBuffer(
   return parsePdfViaLocalPython(buffer, filename);
 }
 
+/** Wake the Render free-tier parser (no-op when using local Python). */
+export async function ensureParserServiceAwake(): Promise<{
+  mode: "remote" | "local";
+  ready: boolean;
+  detail?: string;
+}> {
+  const serviceUrl = resolveParserServiceUrl();
+  if (!serviceUrl) {
+    return { mode: "local", ready: true };
+  }
+
+  const ready = await wakeParserService(serviceUrl);
+  return {
+    mode: "remote",
+    ready,
+    detail: ready
+      ? undefined
+      : "Parser service did not become ready. Open the Render /health URL, wait ~60s, then retry.",
+  };
+}
+
 async function parsePdfViaRemoteService(
   buffer: Buffer,
   filename: string,
   serviceUrl: string,
 ): Promise<Transaction[]> {
-  // Free Render instances sleep after ~15m idle; wake before uploading the PDF.
-  await wakeParserService(serviceUrl);
-
-  const headers: HeadersInit = {};
-  const apiKey = process.env.PARSER_API_KEY?.trim();
-  if (apiKey) {
-    headers.Authorization = `Bearer ${apiKey}`;
+  const apiKey = resolveParserApiKey();
+  if (!apiKey) {
+    throw new Error(
+      "PARSER_API_KEY is missing on Vercel. Copy the same value from the Render service env vars, then redeploy.",
+    );
   }
+
+  // Free Render instances sleep after ~15m idle; wake before uploading the PDF.
+  const awake = await wakeParserService(serviceUrl);
+  if (!awake) {
+    throw new Error(
+      "Parser service is still starting (Render free tier cold start). Wait ~60s and try again.",
+    );
+  }
+
+  const headers: HeadersInit = {
+    Authorization: `Bearer ${apiKey}`,
+  };
 
   let lastError = "Parser service unavailable.";
 
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
+  for (let attempt = 1; attempt <= 4; attempt += 1) {
     const form = new FormData();
     const blob = new Blob([new Uint8Array(buffer)], {
       type: "application/pdf",
@@ -66,12 +102,19 @@ async function parsePdfViaRemoteService(
 
       if (response.status === 502 || response.status === 503 || response.status === 504) {
         lastError = `Parser service warming up (${response.status}). Retrying…`;
-        if (attempt < 3) {
-          await sleep(attempt * 4000);
+        if (attempt < 4) {
+          await wakeParserService(serviceUrl);
+          await sleep(attempt * 5000);
           continue;
         }
         throw new Error(
-          "Parser service returned 502/503 after retries. Render free tier may still be starting — wait ~60s and try again.",
+          `Parser service returned 502 after retries. On Render free tier the instance may still be starting — open ${serviceUrl}/health, wait until it returns ok, then retry.`,
+        );
+      }
+
+      if (response.status === 401 || response.status === 403) {
+        throw new Error(
+          "Parser rejected the API key (401/403). Set PARSER_API_KEY on Vercel to the exact same value as on Render, then redeploy.",
         );
       }
 
@@ -104,11 +147,13 @@ async function parsePdfViaRemoteService(
       }
       if (
         error instanceof Error &&
-        /warming up|502|503|504|fetch failed|ECONNRESET/i.test(error.message) &&
-        attempt < 3
+        /warming up|502|503|504|fetch failed|ECONNRESET|still be starting/i.test(
+          error.message,
+        ) &&
+        attempt < 4
       ) {
         lastError = error.message;
-        await sleep(attempt * 4000);
+        await sleep(attempt * 5000);
         continue;
       }
       throw error;
@@ -120,10 +165,10 @@ async function parsePdfViaRemoteService(
   throw new Error(lastError);
 }
 
-async function wakeParserService(serviceUrl: string): Promise<void> {
-  for (let attempt = 1; attempt <= 6; attempt += 1) {
+async function wakeParserService(serviceUrl: string): Promise<boolean> {
+  for (let attempt = 1; attempt <= 8; attempt += 1) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20_000);
+    const timeout = setTimeout(() => controller.abort(), 25_000);
     try {
       const response = await fetch(`${serviceUrl}/health`, {
         method: "GET",
@@ -131,15 +176,18 @@ async function wakeParserService(serviceUrl: string): Promise<void> {
         cache: "no-store",
       });
       if (response.ok) {
-        return;
+        // Give the instance a beat after cold start before POSTing a PDF.
+        await sleep(750);
+        return true;
       }
     } catch {
       // Ignore — cold start / connection reset is expected on free tier.
     } finally {
       clearTimeout(timeout);
     }
-    await sleep(Math.min(10_000, attempt * 2500));
+    await sleep(Math.min(12_000, attempt * 2500));
   }
+  return false;
 }
 
 function sleep(ms: number): Promise<void> {

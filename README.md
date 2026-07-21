@@ -190,14 +190,16 @@ Scanned bank PDFs (Chase/BoA exports) **require Docker** so Tesseract is install
    - `https://YOUR-SERVICE.onrender.com/health` → `{"status":"ok"}`
    - `https://YOUR-SERVICE.onrender.com/ready` → `"ocr_ready": true`  
    If `/ready` shows `ocr_ready: false`, the service is not using the Docker image.
-5. Copy `PARSER_API_KEY` from Render env vars.
-6. In Vercel → Environment Variables:
+5. Copy `PARSER_API_KEY` from Render env vars (required — `/parse` returns 401 without it).
+6. In Vercel → Environment Variables (Production + Preview):
    - `PARSER_SERVICE_URL` = `https://YOUR-SERVICE.onrender.com` (no trailing slash)
-   - `PARSER_API_KEY` = same value as Render
+   - `PARSER_API_KEY` = **exact same** value as Render
    - `OPENAI_API_KEY` = your OpenAI key
-7. Redeploy Vercel.
+7. **Redeploy Vercel manually** (this repo sets `vercel.json` `git.deploymentEnabled: false`, so pushes do not auto-deploy).
 
-**Cold starts:** Render free tier sleeps. The first parse after idle can take 30–60s; `/api/parse` allows up to 120s.
+**Cold starts / 502:** Render free tier sleeps after ~15m idle. The next request can 502 for 30–60s while the container starts. The app pre-warms via `/api/parser-health` and retries; if you still see 502, open `/health` in a browser, wait for `{"status":"ok"}`, then upload again.
+
+**Quick check:** `GET https://your-app.vercel.app/api/parser-health` should return `{"mode":"remote","ready":true}`.
 
 ### Supported statement layouts
 

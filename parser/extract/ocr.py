@@ -8,7 +8,7 @@ import shutil
 from pathlib import Path
 from typing import Optional
 
-OCR_DPI = 200
+OCR_DPI = int(os.getenv("OCR_DPI", "200"))
 OCR_ZOOM = OCR_DPI / 72.0
 
 

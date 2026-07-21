@@ -1,9 +1,53 @@
 import { NextResponse } from "next/server";
 
-import { parsePdfFiles } from "@/lib/parse-pdf";
+import { ensureParserServiceAwake, parsePdfFiles } from "@/lib/parse-pdf";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
+
+/** Diagnostics: confirms Vercel env + whether Render /health is reachable. */
+export async function GET() {
+  const serviceUrl = process.env.PARSER_SERVICE_URL?.trim().replace(/\/$/, "") || null;
+  const hasApiKey = Boolean(process.env.PARSER_API_KEY?.trim());
+
+  if (!serviceUrl) {
+    return NextResponse.json({
+      ok: false,
+      mode: "local",
+      parserServiceUrl: null,
+      hasApiKey,
+      error:
+        "PARSER_SERVICE_URL is not set on Vercel. Set it to your Render URL and redeploy.",
+    });
+  }
+
+  let healthStatus: number | null = null;
+  let healthBody: unknown = null;
+  let healthError: string | null = null;
+  try {
+    const response = await fetch(`${serviceUrl}/health`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(25_000),
+    });
+    healthStatus = response.status;
+    healthBody = await response.json().catch(async () => response.text());
+  } catch (error) {
+    healthError = error instanceof Error ? error.message : "health check failed";
+  }
+
+  const wake = await ensureParserServiceAwake();
+
+  return NextResponse.json({
+    ok: healthStatus === 200 && hasApiKey && wake.ready,
+    mode: "remote",
+    parserServiceUrl: serviceUrl,
+    hasApiKey,
+    healthStatus,
+    healthBody,
+    healthError,
+    wake,
+  });
+}
 
 export async function POST(request: Request) {
   try {
