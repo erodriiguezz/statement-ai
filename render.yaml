@@ -1,3 +1,5 @@
+# Deploy with: Render → New → Blueprint → this repo
+# IMPORTANT: must use Docker (not native Python) so Tesseract is available for scanned PDFs.
 services:
   - type: web
     name: statement-ai-parser
@@ -5,9 +7,12 @@ services:
     plan: free
     rootDir: parser
     dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /health
     envVars:
       - key: PARSER_API_KEY
         generateValue: true
       - key: PARSER_MAX_UPLOAD_BYTES
         value: "20971520"
+      - key: TESSERACT_CMD
+        value: /usr/bin/tesseract

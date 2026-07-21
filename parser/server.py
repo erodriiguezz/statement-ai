@@ -11,7 +11,7 @@ from typing import Dict, Optional
 from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
-from extract.ocr import OcrUnavailableError
+from extract.ocr import OcrUnavailableError, ocr_status
 from extract.pipeline import ParseError, parse_statement
 
 app = FastAPI(title="Statement AI Parser", version="1.0.0")
@@ -34,8 +34,16 @@ def require_api_key(
 
 
 @app.get("/health")
-def health() -> Dict[str, str]:
-    return {"status": "ok"}
+def health() -> Dict[str, object]:
+    status = ocr_status()
+    return {
+        "status": "ok",
+        "ocr_ready": status["ocr_ready"],
+        "tesseract": status["tesseract"],
+        "tesseract_cmd": status["tesseract_cmd"],
+        "packages_ok": status["packages_ok"],
+        "missing_packages": status["missing_packages"],
+    }
 
 
 @app.post("/parse")

@@ -11,7 +11,11 @@ RUN apt-get update \
         tesseract-ocr-eng \
         libgl1 \
         libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && tesseract --version \
+    && test -x /usr/bin/tesseract
+
+ENV TESSERACT_CMD=/usr/bin/tesseract
 
 WORKDIR /app
 
