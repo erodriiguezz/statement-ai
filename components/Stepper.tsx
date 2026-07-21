@@ -17,40 +17,34 @@ export default function Stepper({
   activeStep,
   completedSteps = [],
 }: StepperProps) {
-  const getStepClasses = (stepIndex: number) => {
-    const isCompleted = completedSteps.includes(stepIndex);
-    const isActive = activeStep === stepIndex;
-
-    let container = "bg-gray-100 border-2 border-gray-300";
-    let icon = "text-gray-600";
-    let text = "text-gray-600";
-
-    if (isCompleted || isActive) {
-      container = "bg-primary border-2 border-primary";
-      icon = "text-white";
-      text = "text-primary";
-    }
-
-    return { container, icon, text };
-  };
-
   return (
-    <div className="flex items-center justify-between gap-4 mb-12">
+    <div className="mb-10 flex items-center justify-center gap-2 md:mb-12 md:gap-3">
       {steps.map((step, index) => {
+        const isCompleted = completedSteps.includes(index);
+        const isActive = activeStep === index;
         const Icon = step.icon;
-        const { container, icon, text } = getStepClasses(index);
 
         return (
-          <div key={step.id} className="flex flex-col items-center">
-            <div className={`p-2 rounded-full transition-all ${container}`}>
-              <Icon className={icon} size={20} />
-            </div>
-
-            <p
-              className={`text-sm font-medium uppercase mt-3 transition-colors ${text}`}
+          <div key={step.id} className="flex items-center gap-2 md:gap-3">
+            <div
+              className={`flex items-center gap-2 rounded-2xl px-3 py-2 transition-all duration-300 ${
+                isActive
+                  ? "bg-accent text-white shadow-sm"
+                  : isCompleted
+                    ? "bg-accent-soft text-accent"
+                    : "bg-white/70 text-muted"
+              }`}
             >
-              {step.text}
-            </p>
+              <Icon className="h-4 w-4" size={16} />
+              <span className="text-sm font-medium">{step.text}</span>
+            </div>
+            {index < steps.length - 1 && (
+              <div
+                className={`h-px w-6 transition-colors duration-300 md:w-10 ${
+                  completedSteps.includes(index) ? "bg-accent/50" : "bg-edge"
+                }`}
+              />
+            )}
           </div>
         );
       })}

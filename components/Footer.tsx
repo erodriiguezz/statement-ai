@@ -1,9 +1,10 @@
 export default function Footer() {
   return (
-    <footer className="w-full bg-white py-4 px-4 md:px-8 flex items-center justify-center">
-      <p className="text-sm text-gray-500">
-        &copy; {new Date().getFullYear()} Statement AI. All rights reserved.
-      </p>
+    <footer className="px-4 py-8 md:px-8">
+      <div className="mx-auto w-full max-w-5xl text-center text-sm text-muted">
+        &copy; {new Date().getFullYear()} Statement.AI · Parsed locally · Not
+        retained
+      </div>
     </footer>
   );
 }

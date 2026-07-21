@@ -13,8 +13,10 @@ function ResultSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-4">
-      <h3 className="text-xl font-semibold">{title}</h3>
+    <section className="space-y-5">
+      <h3 className="font-display text-3xl tracking-[-0.02em] text-ink">
+        {title}
+      </h3>
       {children}
     </section>
   );
@@ -22,13 +24,15 @@ function ResultSection({
 
 export default function ResultsStep({ results }: ResultsStepProps) {
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold">Results</h2>
-        <p className="mt-2 text-gray-600">
-          AI-assisted analysis based on your verified transactions.
+    <div className="space-y-10">
+      <header className="max-w-2xl">
+        <h2 className="font-display text-4xl tracking-[-0.03em] text-ink md:text-5xl">
+          Your draft is ready
+        </h2>
+        <p className="mt-3 text-lg text-muted">
+          Built from the transactions you verified.
         </p>
-      </div>
+      </header>
 
       {results.items.map((item) => {
         switch (item.type) {

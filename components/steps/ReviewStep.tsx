@@ -66,21 +66,23 @@ export default function ReviewStep({
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Review Transactions</h2>
-        <p className="mt-2 text-gray-600">
-          Verify parsed transactions, edit descriptions and amounts, then
-          confirm to generate your results.
+    <div className="space-y-8">
+      <header className="max-w-2xl">
+        <h2 className="font-display text-4xl tracking-[-0.03em] text-ink md:text-5xl">
+          Review transactions
+        </h2>
+        <p className="mt-3 text-lg text-muted">
+          Make sure everything looks right, then generate your Schedule C draft.
         </p>
-      </div>
+      </header>
 
-      <div>
+      <div className="max-w-md">
         <label
           htmlFor="business-name"
-          className="mb-2 block text-sm font-medium text-gray-700"
+          className="mb-2 block text-sm font-medium text-ink"
         >
-          Business name (optional)
+          Business name{" "}
+          <span className="font-normal text-muted">(optional)</span>
         </label>
         <input
           id="business-name"
@@ -88,7 +90,7 @@ export default function ReviewStep({
           value={businessName}
           onChange={(e) => setBusinessName(e.target.value)}
           placeholder="Acme Consulting LLC"
-          className="w-full rounded-lg border border-gray-200 px-3 py-2"
+          className="w-full rounded-2xl border border-edge bg-white/80 px-4 py-3 outline-none transition-colors focus:border-accent"
         />
       </div>
 
@@ -98,7 +100,7 @@ export default function ReviewStep({
       />
 
       {error && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="rounded-2xl border border-danger/20 bg-white px-4 py-3 text-sm text-danger">
           {error}
         </p>
       )}
@@ -107,10 +109,10 @@ export default function ReviewStep({
         type="button"
         onClick={() => void handleConfirm()}
         disabled={isSubmitting}
-        className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 font-medium text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
       >
         {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-        {isSubmitting ? "Generating results..." : "Confirm & Generate Results"}
+        {isSubmitting ? "Generating draft…" : "Confirm & generate draft"}
       </button>
     </div>
   );

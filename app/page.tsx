@@ -34,24 +34,26 @@ export default function Home() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-12 md:px-8 md:py-24">
+    <div className="mx-auto w-full max-w-5xl px-4 pb-12 pt-2 md:px-8 md:pb-16">
       <Stepper
         steps={steps}
         activeStep={activeStep}
         completedSteps={completedSteps}
       />
 
-      {activeStep === 0 && <UploadStep onComplete={handleUploadComplete} />}
+      <div key={activeStep} className="animate-fade-up">
+        {activeStep === 0 && <UploadStep onComplete={handleUploadComplete} />}
 
-      {activeStep === 1 && (
-        <ReviewStep
-          transactions={transactions}
-          onTransactionsChange={setTransactions}
-          onComplete={handleReviewComplete}
-        />
-      )}
+        {activeStep === 1 && (
+          <ReviewStep
+            transactions={transactions}
+            onTransactionsChange={setTransactions}
+            onComplete={handleReviewComplete}
+          />
+        )}
 
-      {activeStep === 2 && results && <ResultsStep results={results} />}
+        {activeStep === 2 && results && <ResultsStep results={results} />}
+      </div>
     </div>
   );
 }

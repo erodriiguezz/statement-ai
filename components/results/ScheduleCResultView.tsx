@@ -13,17 +13,17 @@ function formatCurrency(amount: number) {
 
 export default function ScheduleCResultView({ data }: ScheduleCResultViewProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="grid gap-4 sm:grid-cols-3">
-        <SummaryCard
+        <SummaryStat
           label="Gross receipts"
           value={formatCurrency(data.grossReceipts)}
         />
-        <SummaryCard
+        <SummaryStat
           label="Total expenses"
           value={formatCurrency(data.totalExpenses)}
         />
-        <SummaryCard
+        <SummaryStat
           label="Net profit"
           value={formatCurrency(data.netProfit)}
           highlight
@@ -31,46 +31,63 @@ export default function ScheduleCResultView({ data }: ScheduleCResultViewProps) 
       </div>
 
       {(data.businessName || data.taxYear) && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
+        <div className="flex flex-wrap gap-x-8 gap-y-3 text-sm text-muted">
           {data.businessName && (
             <p>
-              <span className="font-medium">Business:</span> {data.businessName}
+              <span className="block text-xs uppercase tracking-[0.08em]">
+                Business
+              </span>
+              <span className="mt-1 block text-base text-ink">
+                {data.businessName}
+              </span>
             </p>
           )}
           {data.taxYear && (
             <p>
-              <span className="font-medium">Tax year:</span> {data.taxYear}
+              <span className="block text-xs uppercase tracking-[0.08em]">
+                Tax year
+              </span>
+              <span className="mt-1 block font-mono-amount text-base text-ink">
+                {data.taxYear}
+              </span>
             </p>
           )}
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
+      <div className="overflow-x-auto rounded-3xl border border-edge bg-white/75">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-gray-50 text-left">
-              <th className="border-b px-4 py-3 font-semibold">Line</th>
-              <th className="border-b px-4 py-3 font-semibold">Category</th>
-              <th className="border-b px-4 py-3 font-semibold text-right">
+            <tr className="text-left text-muted">
+              <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.08em]">
+                Line
+              </th>
+              <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.08em]">
+                Category
+              </th>
+              <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-[0.08em]">
                 Amount
               </th>
             </tr>
           </thead>
           <tbody>
             {data.lineItems.map((item) => (
-              <tr key={`${item.line}-${item.label}`} className="align-top">
-                <td className="border-b px-4 py-3 font-medium">{item.line}</td>
-                <td className="border-b px-4 py-3">
-                  <p>{item.label}</p>
+              <tr
+                key={`${item.line}-${item.label}`}
+                className="align-top border-t border-edge/70"
+              >
+                <td className="px-5 py-4 font-medium text-ink">{item.line}</td>
+                <td className="px-5 py-4">
+                  <p className="text-ink">{item.label}</p>
                   {item.transactions.length > 0 && (
-                    <ul className="mt-2 space-y-1 text-xs text-gray-500">
+                    <ul className="mt-2 space-y-1 text-xs text-muted">
                       {item.transactions.map((tx) => (
                         <li key={tx}>{tx}</li>
                       ))}
                     </ul>
                   )}
                 </td>
-                <td className="border-b px-4 py-3 text-right font-medium">
+                <td className="px-5 py-4 text-right font-mono-amount font-medium text-ink">
                   {formatCurrency(item.amount)}
                 </td>
               </tr>
@@ -80,7 +97,7 @@ export default function ScheduleCResultView({ data }: ScheduleCResultViewProps) 
       </div>
 
       {data.notes && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <div className="rounded-2xl border border-warning/25 bg-[#fff8eb] px-4 py-3 text-sm text-warning">
           {data.notes}
         </div>
       )}
@@ -88,7 +105,7 @@ export default function ScheduleCResultView({ data }: ScheduleCResultViewProps) 
   );
 }
 
-function SummaryCard({
+function SummaryStat({
   label,
   value,
   highlight = false,
@@ -99,12 +116,22 @@ function SummaryCard({
 }) {
   return (
     <div
-      className={`rounded-lg border px-4 py-4 ${
-        highlight ? "border-primary bg-primary/5" : "border-gray-200 bg-white"
+      className={`rounded-3xl border px-5 py-5 ${
+        highlight
+          ? "border-accent/30 bg-accent-soft"
+          : "border-edge bg-white/70"
       }`}
     >
-      <p className="text-sm text-gray-600">{label}</p>
-      <p className="mt-1 text-2xl font-bold">{value}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+        {label}
+      </p>
+      <p
+        className={`mt-2 font-mono-amount text-2xl font-semibold tracking-tight ${
+          highlight ? "text-accent" : "text-ink"
+        }`}
+      >
+        {value}
+      </p>
     </div>
   );
 }
