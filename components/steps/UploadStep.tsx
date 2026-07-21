@@ -85,8 +85,9 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
           Statement<span className="text-accent">.AI</span>
         </h1>
         <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-muted">
-          Upload statements, review transactions, and draft your Schedule C —
-          privately on your machine.
+          Upload statements, review transactions, and draft your Schedule C.
+          PDFs are parsed locally; only verified transaction text is used for AI
+          categorization when enabled.
         </p>
       </header>
 
@@ -99,7 +100,9 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
         />
         <span>
           I authorize temporary processing of my documents for Schedule C
-          preparation. Files are parsed locally and not retained.
+          preparation. PDFs are parsed locally and not retained. If AI drafting
+          is enabled, extracted transaction details may be sent to the AI
+          provider for categorization.
         </span>
       </label>
 

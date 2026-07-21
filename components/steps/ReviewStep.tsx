@@ -71,8 +71,9 @@ export default function ReviewStep({
         <h2 className="font-display text-4xl tracking-[-0.03em] text-ink md:text-5xl">
           Review transactions
         </h2>
-        <p className="mt-3 text-lg text-muted">
+          <p className="mt-3 text-lg text-muted">
           Make sure everything looks right, then generate your Schedule C draft.
+          AI will categorize these verified transactions into Schedule C lines.
         </p>
       </header>
 
