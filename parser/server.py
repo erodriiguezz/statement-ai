@@ -34,10 +34,16 @@ def require_api_key(
 
 
 @app.get("/health")
-def health() -> Dict[str, object]:
+def health() -> Dict[str, str]:
+    # Keep this tiny — Render free-tier health checks + cold starts.
+    return {"status": "ok"}
+
+
+@app.get("/ready")
+def ready() -> Dict[str, object]:
     status = ocr_status()
     return {
-        "status": "ok",
+        "status": "ok" if status["ocr_ready"] else "degraded",
         "ocr_ready": status["ocr_ready"],
         "tesseract": status["tesseract"],
         "tesseract_cmd": status["tesseract_cmd"],

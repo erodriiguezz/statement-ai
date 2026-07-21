@@ -186,9 +186,10 @@ Scanned bank PDFs (Chase/BoA exports) **require Docker** so Tesseract is install
    - **Runtime:** **Docker** (not Python)
    - **Dockerfile path:** `./Dockerfile`
    - **Health check path:** `/health`
-4. After deploy, open `https://YOUR-SERVICE.onrender.com/health`  
-   You should see `"ocr_ready": true` and `"tesseract": true`.  
-   If `ocr_ready` is false, the service is not using the Docker image.
+4. After deploy, open:
+   - `https://YOUR-SERVICE.onrender.com/health` → `{"status":"ok"}`
+   - `https://YOUR-SERVICE.onrender.com/ready` → `"ocr_ready": true`  
+   If `/ready` shows `ocr_ready: false`, the service is not using the Docker image.
 5. Copy `PARSER_API_KEY` from Render env vars.
 6. In Vercel → Environment Variables:
    - `PARSER_SERVICE_URL` = `https://YOUR-SERVICE.onrender.com` (no trailing slash)
