@@ -3,12 +3,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import gc
 import os
 import tempfile
 import threading
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
@@ -20,7 +21,7 @@ app = FastAPI(title="Statement AI Parser", version="1.0.0")
 
 MAX_UPLOAD_BYTES = int(os.getenv("PARSER_MAX_UPLOAD_BYTES", str(20 * 1024 * 1024)))
 PARSER_API_KEY = os.getenv("PARSER_API_KEY", "").strip()
-# Serialize parses — free-tier 512MB OOMs if OCR runs concurrently.
+# Serialize heavy PDF/OCR work so free-tier 512MB does not OOM.
 _PARSE_LOCK = threading.Lock()
 
 
@@ -37,9 +38,23 @@ def require_api_key(
         raise HTTPException(status_code=403, detail="Invalid API key.")
 
 
+def _parse_with_lock(pdf_path: Path) -> List[dict]:
+    with _PARSE_LOCK:
+        try:
+            return parse_statement(pdf_path)
+        finally:
+            gc.collect()
+
+
+@app.get("/")
+def root() -> Dict[str, str]:
+    # Render sometimes probes HEAD/GET / during boot.
+    return {"status": "ok"}
+
+
 @app.get("/health")
 def health() -> Dict[str, str]:
-    # Keep this tiny — Render free-tier health checks + cold starts.
+    # Keep this tiny — must stay fast even while OCR runs in a worker thread.
     return {"status": "ok"}
 
 
@@ -83,19 +98,23 @@ async def parse_pdf(
 
         # Drop the upload buffer before heavy PDF/OCR work.
         del data
-        with _PARSE_LOCK:
-            transactions = parse_statement(tmp_path)
+
+        # Run sync OCR/pdf work off the event loop so /health stays responsive.
+        try:
+            transactions = await asyncio.to_thread(_parse_with_lock, tmp_path)
+        except OcrUnavailableError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ParseError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
         return JSONResponse({"transactions": transactions})
-    except OcrUnavailableError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
-    except ParseError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except HTTPException:
+        raise
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=str(exc)) from exc
     finally:
         if tmp_path is not None and tmp_path.exists():
             tmp_path.unlink()
-        gc.collect()
 
 
 if __name__ == "__main__":

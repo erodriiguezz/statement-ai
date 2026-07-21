@@ -32,5 +32,5 @@ COPY . .
 ENV PORT=10000
 EXPOSE 10000
 
-# Single sync worker — free tier OOMs with multiple workers / concurrent OCR.
-CMD ["sh", "-c", "uvicorn server:app --host 0.0.0.0 --port ${PORT} --workers 1 --limit-concurrency 2 --timeout-keep-alive 75"]
+# One worker process; OCR runs in a thread so /health never blocks.
+CMD ["sh", "-c", "uvicorn server:app --host 0.0.0.0 --port ${PORT} --workers 1 --timeout-keep-alive 75"]

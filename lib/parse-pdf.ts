@@ -166,7 +166,8 @@ async function parsePdfViaRemoteService(
 }
 
 async function wakeParserService(serviceUrl: string): Promise<boolean> {
-  for (let attempt = 1; attempt <= 8; attempt += 1) {
+  // Fewer probes — avoid stampeding Render while the free instance is booting.
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 25_000);
     try {
@@ -176,8 +177,7 @@ async function wakeParserService(serviceUrl: string): Promise<boolean> {
         cache: "no-store",
       });
       if (response.ok) {
-        // Give the instance a beat after cold start before POSTing a PDF.
-        await sleep(750);
+        await sleep(500);
         return true;
       }
     } catch {
@@ -185,7 +185,7 @@ async function wakeParserService(serviceUrl: string): Promise<boolean> {
     } finally {
       clearTimeout(timeout);
     }
-    await sleep(Math.min(12_000, attempt * 2500));
+    await sleep(Math.min(10_000, attempt * 3000));
   }
   return false;
 }

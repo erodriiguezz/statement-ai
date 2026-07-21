@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { ensureParserServiceAwake, parsePdfFiles } from "@/lib/parse-pdf";
+import { parsePdfFiles } from "@/lib/parse-pdf";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -35,17 +35,14 @@ export async function GET() {
     healthError = error instanceof Error ? error.message : "health check failed";
   }
 
-  const wake = await ensureParserServiceAwake();
-
   return NextResponse.json({
-    ok: healthStatus === 200 && hasApiKey && wake.ready,
+    ok: healthStatus === 200 && hasApiKey,
     mode: "remote",
     parserServiceUrl: serviceUrl,
     hasApiKey,
     healthStatus,
     healthBody,
     healthError,
-    wake,
   });
 }
 
