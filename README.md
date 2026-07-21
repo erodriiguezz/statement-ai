@@ -177,19 +177,24 @@ curl -s http://127.0.0.1:10000/health
 
 ### Deploy parser on Render (for Vercel)
 
+Scanned bank PDFs (Chase/BoA exports) **require Docker** so Tesseract is installed. A native Python Render service will fail OCR.
+
 1. Push this repo (includes `parser/Dockerfile` + `render.yaml`).
 2. In Render: **New → Blueprint** (or Web Service) → select the repo.
 3. Service settings that matter:
    - **Root directory:** `parser`
-   - **Runtime:** Docker (`Dockerfile` in `parser/`)
+   - **Runtime:** **Docker** (not Python)
+   - **Dockerfile path:** `./Dockerfile`
    - **Health check path:** `/health`
-4. Copy the generated `PARSER_API_KEY` from Render env vars.
-5. After deploy, note the service URL, e.g. `https://statement-ai-parser.onrender.com`.
-6. In Vercel project → Settings → Environment Variables:
-   - `PARSER_SERVICE_URL` = `https://statement-ai-parser.onrender.com` (no trailing slash)
+4. After deploy, open `https://YOUR-SERVICE.onrender.com/health`  
+   You should see `"ocr_ready": true` and `"tesseract": true`.  
+   If `ocr_ready` is false, the service is not using the Docker image.
+5. Copy `PARSER_API_KEY` from Render env vars.
+6. In Vercel → Environment Variables:
+   - `PARSER_SERVICE_URL` = `https://YOUR-SERVICE.onrender.com` (no trailing slash)
    - `PARSER_API_KEY` = same value as Render
-   - `OPENAI_API_KEY` = your OpenAI key (for Schedule C)
-7. Redeploy the Vercel app.
+   - `OPENAI_API_KEY` = your OpenAI key
+7. Redeploy Vercel.
 
 **Cold starts:** Render free tier sleeps. The first parse after idle can take 30–60s; `/api/parse` allows up to 120s.
 

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import os
 import re
 import shutil
 from pathlib import Path
+from typing import Optional
 
 OCR_DPI = 200
 OCR_ZOOM = OCR_DPI / 72.0
@@ -14,36 +16,73 @@ class OcrUnavailableError(RuntimeError):
     """Raised when OCR dependencies or Tesseract are unavailable."""
 
 
-def ensure_ocr_deps() -> None:
-    missing: list[str] = []
+def resolve_tesseract_cmd() -> Optional[str]:
+    explicit = os.getenv("TESSERACT_CMD", "").strip()
+    if explicit and Path(explicit).exists():
+        return explicit
+
+    found = shutil.which("tesseract")
+    if found:
+        return found
+
+    # Common Linux package paths (Render / Docker)
+    for candidate in (
+        "/usr/bin/tesseract",
+        "/usr/local/bin/tesseract",
+        "/bin/tesseract",
+    ):
+        if Path(candidate).exists():
+            return candidate
+    return None
+
+
+def ocr_status() -> dict:
+    missing_packages = []
     try:
         import fitz  # noqa: F401
     except ImportError:
-        missing.append("pymupdf")
+        missing_packages.append("pymupdf")
     try:
         import pytesseract  # noqa: F401
     except ImportError:
-        missing.append("pytesseract")
+        missing_packages.append("pytesseract")
     try:
         from PIL import Image  # noqa: F401
     except ImportError:
-        missing.append("Pillow")
+        missing_packages.append("Pillow")
 
-    if missing:
-        pkgs = " ".join(missing)
+    tesseract_cmd = resolve_tesseract_cmd()
+    return {
+        "tesseract": bool(tesseract_cmd),
+        "tesseract_cmd": tesseract_cmd or "",
+        "packages_ok": len(missing_packages) == 0,
+        "missing_packages": missing_packages,
+        "ocr_ready": bool(tesseract_cmd) and len(missing_packages) == 0,
+    }
+
+
+def ensure_ocr_deps() -> str:
+    status = ocr_status()
+    if not status["packages_ok"]:
+        pkgs = " ".join(status["missing_packages"])
         raise OcrUnavailableError(
-            "This PDF appears scanned and requires OCR packages that are not installed. "
-            f"Install them with: pip install {pkgs} "
-            "(or: pip install -r parser/requirements.txt). "
-            "Also install Tesseract (macOS: brew install tesseract). "
-            "If using the Next.js app, set PYTHON_PATH to parser/.venv/bin/python in .env.local."
+            "This PDF appears scanned and requires OCR Python packages. "
+            f"Missing: {pkgs}. On Render, deploy the parser with Docker "
+            "(parser/Dockerfile), not a plain Python runtime."
         )
 
-    if not shutil.which("tesseract"):
+    tesseract_cmd = status["tesseract_cmd"]
+    if not tesseract_cmd:
         raise OcrUnavailableError(
-            "This PDF appears scanned and requires OCR. "
-            "Install Tesseract (macOS: brew install tesseract) and retry."
+            "This PDF appears scanned and requires the Tesseract binary. "
+            "On Render, use Docker runtime with parser/Dockerfile "
+            "(includes tesseract-ocr). Locally: brew install tesseract."
         )
+
+    import pytesseract
+
+    pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
+    return tesseract_cmd
 
 
 def ocr_page(pdf_path: Path, page_index: int) -> str:
