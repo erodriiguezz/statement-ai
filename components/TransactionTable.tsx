@@ -1,3 +1,6 @@
+"use client";
+
+import DateCell from "@/components/DateCell";
 import type { Transaction } from "@/lib/types";
 
 interface TransactionTableProps {
@@ -20,7 +23,8 @@ export default function TransactionTable({
       }
 
       if (field === "amount") {
-        return { ...tx, amount: parseFloat(value) || 0 };
+        const parsed = Number.parseFloat(value);
+        return { ...tx, amount: Number.isFinite(parsed) ? parsed : 0 };
       }
 
       return { ...tx, [field]: value };
@@ -47,58 +51,70 @@ export default function TransactionTable({
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
-        <table className="w-full border-collapse text-sm">
+      <div className="overflow-x-auto rounded-3xl border border-edge bg-white/75">
+        <table className="w-full table-fixed border-collapse text-sm">
+          <colgroup>
+            <col className="w-[9.5rem]" />
+            <col />
+            <col className="w-[8.5rem]" />
+            <col className="w-14" />
+          </colgroup>
           <thead>
-            <tr className="bg-gray-50 text-left">
-              <th className="border-b px-4 py-3 font-semibold">Date</th>
-              <th className="border-b px-4 py-3 font-semibold">Description</th>
-              <th className="border-b px-4 py-3 font-semibold text-right">
+            <tr className="text-left text-muted">
+              <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.08em]">
+                Date
+              </th>
+              <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.08em]">
+                Description
+              </th>
+              <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-[0.08em]">
                 Amount
               </th>
-              <th className="border-b px-4 py-3 w-16" />
+              <th className="px-4 py-4" />
             </tr>
           </thead>
           <tbody>
             {transactions.map((tx) => (
-              <tr key={tx.id} className="hover:bg-gray-50/80">
-                <td className="border-b px-4 py-2">
-                  <input
-                    type="date"
+              <tr
+                key={tx.id}
+                className="border-t border-edge/70 transition-colors hover:bg-accent-soft/40"
+              >
+                <td className="px-5 py-2.5 align-middle">
+                  <DateCell
                     value={tx.date}
-                    onChange={(e) =>
-                      updateTransaction(tx.id, "date", e.target.value)
+                    onChange={(next) =>
+                      updateTransaction(tx.id, "date", next)
                     }
-                    className="w-full rounded border border-gray-200 px-2 py-1.5"
                   />
                 </td>
-                <td className="border-b px-4 py-2">
+                <td className="px-5 py-2.5 align-middle">
                   <input
                     type="text"
                     value={tx.description}
                     onChange={(e) =>
                       updateTransaction(tx.id, "description", e.target.value)
                     }
-                    className="w-full rounded border border-gray-200 px-2 py-1.5"
+                    className="w-full min-w-0 rounded-xl border border-transparent bg-transparent py-2 outline-none focus:border-edge focus:bg-white focus:px-2"
                     placeholder="Transaction description"
                   />
                 </td>
-                <td className="border-b px-4 py-2">
+                <td className="px-5 py-2.5 align-middle">
                   <input
                     type="number"
+                    inputMode="decimal"
                     value={tx.amount}
                     onChange={(e) =>
                       updateTransaction(tx.id, "amount", e.target.value)
                     }
-                    className="w-full rounded border border-gray-200 px-2 py-1.5 text-right"
+                    className="no-spinner w-full rounded-xl border border-transparent bg-transparent py-2 text-right font-mono-amount outline-none focus:border-edge focus:bg-white focus:px-2"
                     step="0.01"
                   />
                 </td>
-                <td className="border-b px-4 py-2 text-center">
+                <td className="px-4 py-2.5 text-center align-middle">
                   <button
                     type="button"
                     onClick={() => removeTransaction(tx.id)}
-                    className="text-red-600 hover:text-red-800"
+                    className="rounded-xl px-2 text-lg text-muted transition-colors hover:bg-white hover:text-danger"
                     aria-label="Remove transaction"
                   >
                     ×
@@ -113,7 +129,7 @@ export default function TransactionTable({
       <button
         type="button"
         onClick={addTransaction}
-        className="text-sm font-medium text-primary hover:underline"
+        className="cursor-pointer text-sm font-semibold text-accent transition-colors hover:text-ink"
       >
         + Add transaction
       </button>

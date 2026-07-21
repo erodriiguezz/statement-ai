@@ -79,25 +79,27 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-4xl font-bold mb-4">Turn Statements into Tax Forms</h2>
-        <p className="text-xl text-gray-600">
-          Upload bank or credit card statement PDFs. We extract transactions for
-          your review, then generate an IRS Schedule C draft.
+    <div className="space-y-8">
+      <header className="mx-auto max-w-2xl text-center">
+        <h1 className="font-display text-5xl leading-[1.08] tracking-[-0.03em] text-ink md:text-6xl">
+          Statement<span className="text-accent">.AI</span>
+        </h1>
+        <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-muted">
+          Upload statements, review transactions, and draft your Schedule C —
+          privately on your machine.
         </p>
-      </div>
+      </header>
 
-      <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
+      <label className="mx-auto flex max-w-2xl cursor-pointer items-start justify-center gap-3 text-left text-sm leading-relaxed text-muted">
         <input
           type="checkbox"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-          className="mt-1 cursor-pointer"
+          className="mt-1 size-4 shrink-0 accent-[var(--color-accent)]"
         />
         <span>
-          I authorize the temporary processing of my documents for Schedule C
-          preparation. Files are parsed locally and not retained after processing.
+          I authorize temporary processing of my documents for Schedule C
+          preparation. Files are parsed locally and not retained.
         </span>
       </label>
 
@@ -116,12 +118,25 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
             inputRef.current?.click();
           }
         }}
-        className={`rounded-xl border-2 border-dashed p-10 text-center transition-colors ${
+        role={uploadEnabled ? "button" : undefined}
+        tabIndex={uploadEnabled ? 0 : -1}
+        onKeyDown={(event) => {
+          if (!uploadEnabled) {
+            return;
+          }
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
+        className={`relative overflow-hidden rounded-[2rem] border px-6 py-16 text-center transition-all duration-300 md:py-24 ${
           uploadEnabled
             ? isDragging
-              ? "cursor-pointer border-primary bg-primary/5"
-              : "cursor-pointer border-gray-300 hover:border-primary/60"
-            : "cursor-not-allowed border-gray-200 bg-gray-50 opacity-60"
+              ? "border-accent bg-accent-soft scale-[1.01]"
+              : `border-edge/80 bg-white/60 hover:border-accent/40 hover:bg-white/90 ${
+                  consent ? "animate-soft-pulse" : ""
+                }`
+            : "cursor-not-allowed border-edge/60 bg-white/40 opacity-65"
         }`}
       >
         <input
@@ -138,28 +153,28 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
           }}
         />
 
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-soft text-accent">
           {isUploading ? (
-            <Loader2 className="h-7 w-7 animate-spin text-primary" />
+            <Loader2 className="h-6 w-6 animate-spin" />
           ) : (
-            <Upload className="h-7 w-7 text-primary" />
+            <Upload className="h-6 w-6" />
           )}
         </div>
 
-        <p className="text-lg font-medium text-gray-800">
+        <p className="font-display text-3xl tracking-[-0.02em] text-ink md:text-4xl">
           {isUploading
-            ? "Parsing statements..."
+            ? "Parsing your statements…"
             : uploadEnabled
-              ? "Drag and drop PDF statements here"
-              : "Authorize processing above to upload statements"}
+              ? "Drop your PDFs here"
+              : "Check the box above to begin"}
         </p>
         {uploadEnabled && (
-          <p className="mt-2 text-sm text-gray-500">or click to browse files</p>
+          <p className="mt-3 text-sm text-muted">or click to browse files</p>
         )}
       </div>
 
       {error && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="mx-auto max-w-2xl rounded-2xl border border-danger/20 bg-white px-4 py-3 text-sm text-danger">
           {error}
         </p>
       )}

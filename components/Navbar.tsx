@@ -1,18 +1,11 @@
-import Link from "next/link";
-import { Bot } from "lucide-react";
-
 export default function Navbar() {
   return (
-    <nav className="w-full bg-white shadow-md py-4 px-4 md:px-8 flex items-center justify-between">
-      <Link href="/" className="flex items-center space-x-2">
-        <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-          <Bot className="text-white" size={25} />
-        </div>
-
-        <p className="text-lg font-bold text-gray-800">
-          Statement.<span className="text-primary">AI</span>
+    <nav className="px-4 py-5 md:px-8">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-between">
+        <p className="font-display text-[1.65rem] tracking-[-0.03em] text-ink">
+          Statement<span className="text-accent">.AI</span>
         </p>
-      </Link>
+      </div>
     </nav>
   );
 }
