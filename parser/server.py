@@ -3,8 +3,10 @@
 
 from __future__ import annotations
 
+import gc
 import os
 import tempfile
+import threading
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -18,6 +20,8 @@ app = FastAPI(title="Statement AI Parser", version="1.0.0")
 
 MAX_UPLOAD_BYTES = int(os.getenv("PARSER_MAX_UPLOAD_BYTES", str(20 * 1024 * 1024)))
 PARSER_API_KEY = os.getenv("PARSER_API_KEY", "").strip()
+# Serialize parses — free-tier 512MB OOMs if OCR runs concurrently.
+_PARSE_LOCK = threading.Lock()
 
 
 def require_api_key(
@@ -77,7 +81,10 @@ async def parse_pdf(
             tmp.write(data)
             tmp_path = Path(tmp.name)
 
-        transactions = parse_statement(tmp_path)
+        # Drop the upload buffer before heavy PDF/OCR work.
+        del data
+        with _PARSE_LOCK:
+            transactions = parse_statement(tmp_path)
         return JSONResponse({"transactions": transactions})
     except OcrUnavailableError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
@@ -88,6 +95,7 @@ async def parse_pdf(
     finally:
         if tmp_path is not None and tmp_path.exists():
             tmp_path.unlink()
+        gc.collect()
 
 
 if __name__ == "__main__":

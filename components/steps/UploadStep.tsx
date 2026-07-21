@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Upload } from "lucide-react";
 
 import type { Transaction } from "@/lib/types";
@@ -16,6 +16,13 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const uploadEnabled = consent && !isUploading;
+
+  // Pre-wake Render free-tier parser while the user is on the upload step.
+  useEffect(() => {
+    void fetch("/api/parser-health", { cache: "no-store" }).catch(() => {
+      // Best-effort warm-up; upload path retries on its own.
+    });
+  }, []);
 
   const uploadFiles = async (files: FileList | File[]) => {
     const fileArray = Array.from(files).filter((file) =>

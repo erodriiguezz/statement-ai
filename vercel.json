@@ -1,5 +1,10 @@
 {
-  "git": {
-    "deploymentEnabled": false
+  "functions": {
+    "app/api/parse/route.ts": {
+      "maxDuration": 120
+    },
+    "app/api/parser-health/route.ts": {
+      "maxDuration": 60
+    }
   }
 }
