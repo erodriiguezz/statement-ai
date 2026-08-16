@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import re
 import shutil
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -14,6 +15,21 @@ OCR_ZOOM = OCR_DPI / 72.0
 
 class OcrUnavailableError(RuntimeError):
     """Raised when OCR dependencies or Tesseract are unavailable."""
+
+
+def _import_pymupdf():
+    """Import pymupdf with its message/log streams redirected to stderr.
+
+    PyMuPDF writes both its own diagnostics and internal MuPDF warnings
+    (malformed PDF structure, font issues, etc.) to stdout by default. Our
+    CLI (parse_statement.py) treats stdout as pure JSON, so any such
+    warning corrupts the output. Route both streams to stderr instead.
+    """
+    import pymupdf
+
+    pymupdf.set_messages(stream=sys.stderr)
+    pymupdf.set_log(stream=sys.stderr)
+    return pymupdf
 
 
 def resolve_tesseract_cmd() -> Optional[str]:
@@ -39,7 +55,7 @@ def resolve_tesseract_cmd() -> Optional[str]:
 def ocr_status() -> dict:
     missing_packages = []
     try:
-        import pymupdf  # noqa: F401
+        _import_pymupdf()
     except ImportError:
         missing_packages.append("pymupdf")
     try:
@@ -87,7 +103,7 @@ def ensure_ocr_deps() -> str:
 
 def ocr_page(pdf_path: Path, page_index: int) -> str:
     ensure_ocr_deps()
-    import pymupdf as fitz
+    fitz = _import_pymupdf()
     import pytesseract
     from PIL import Image
 
