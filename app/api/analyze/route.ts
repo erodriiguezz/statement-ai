@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { generateAnalysis } from "@/lib/analyze";
+import { isAllowedClassificationLine } from "@/lib/schedule-c-lines";
 import type { Transaction } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -23,7 +24,9 @@ function isTransaction(value: unknown): value is Transaction {
     /^\d{4}-\d{2}-\d{2}$/.test(tx.date) &&
     typeof tx.description === "string" &&
     typeof tx.amount === "number" &&
-    Number.isFinite(tx.amount)
+    Number.isFinite(tx.amount) &&
+    (tx.category === undefined ||
+      (typeof tx.category === "string" && isAllowedClassificationLine(tx.category)))
   );
 }
 

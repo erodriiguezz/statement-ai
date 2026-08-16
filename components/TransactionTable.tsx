@@ -1,6 +1,7 @@
 "use client";
 
 import DateCell from "@/components/DateCell";
+import { EXCLUDE_LINE, SCHEDULE_C_LINES } from "@/lib/schedule-c-lines";
 import type { Transaction } from "@/lib/types";
 
 interface TransactionTableProps {
@@ -25,6 +26,12 @@ export default function TransactionTable({
       if (field === "amount") {
         const parsed = Number.parseFloat(value);
         return { ...tx, amount: Number.isFinite(parsed) ? parsed : 0 };
+      }
+
+      if (field === "category") {
+        // Empty selection means "let the AI decide" — omit the field
+        // rather than sending an empty string.
+        return { ...tx, category: value || undefined };
       }
 
       return { ...tx, [field]: value };
@@ -52,11 +59,12 @@ export default function TransactionTable({
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto rounded-3xl border border-edge bg-white/75">
-        <table className="w-full table-fixed border-collapse text-sm">
+        <table className="w-full min-w-[64rem] table-fixed border-collapse text-sm">
           <colgroup>
             <col className="w-[9.5rem]" />
             <col />
             <col className="w-[8.5rem]" />
+            <col className="w-[14rem]" />
             <col className="w-14" />
           </colgroup>
           <thead>
@@ -69,6 +77,9 @@ export default function TransactionTable({
               </th>
               <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-[0.08em]">
                 Amount
+              </th>
+              <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.08em]">
+                Category
               </th>
               <th className="px-4 py-4" />
             </tr>
@@ -109,6 +120,23 @@ export default function TransactionTable({
                     className="no-spinner w-full rounded-xl border border-transparent bg-transparent py-2 text-right font-mono-amount outline-none focus:border-edge focus:bg-white focus:px-2"
                     step="0.01"
                   />
+                </td>
+                <td className="px-5 py-2.5 align-middle">
+                  <select
+                    value={tx.category ?? ""}
+                    onChange={(e) =>
+                      updateTransaction(tx.id, "category", e.target.value)
+                    }
+                    className="w-full min-w-0 cursor-pointer rounded-xl border border-transparent bg-transparent py-2 text-ink outline-none focus:border-edge focus:bg-white focus:px-2"
+                  >
+                    <option value="">Let AI decide</option>
+                    <option value={EXCLUDE_LINE}>Exclude (personal/transfer)</option>
+                    {SCHEDULE_C_LINES.map((line) => (
+                      <option key={line.line} value={line.line}>
+                        {line.line} — {line.label}
+                      </option>
+                    ))}
+                  </select>
                 </td>
                 <td className="px-4 py-2.5 text-center align-middle">
                   <button

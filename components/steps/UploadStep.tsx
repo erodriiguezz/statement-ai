@@ -1,21 +1,42 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Upload } from "lucide-react";
+import { FileText, Loader2, Upload, X } from "lucide-react";
 
+import AnalyzingOverlay from "@/components/AnalyzingOverlay";
 import type { Transaction } from "@/lib/types";
 
-interface UploadStepProps {
-  onComplete: (transactions: Transaction[]) => void;
+export interface SelectedFile {
+  id: string;
+  file: File;
 }
 
-export default function UploadStep({ onComplete }: UploadStepProps) {
+interface UploadStepProps {
+  consent: boolean;
+  onConsentChange: (consent: boolean) => void;
+  selectedFiles: SelectedFile[];
+  onSelectedFilesChange: (files: SelectedFile[]) => void;
+  /** True when selectedFiles exactly matches the set already analysed into transactions. */
+  alreadyAnalyzed: boolean;
+  onComplete: (transactions: Transaction[]) => void;
+  onContinue: () => void;
+}
+
+export default function UploadStep({
+  consent,
+  onConsentChange,
+  selectedFiles,
+  onSelectedFilesChange,
+  alreadyAnalyzed,
+  onComplete,
+  onContinue,
+}: UploadStepProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [consent, setConsent] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const uploadEnabled = consent && !isUploading;
+  const dropEnabled = consent && !isAnalyzing;
+  const canAnalyze = consent && !isAnalyzing && selectedFiles.length > 0;
 
   // Pre-wake Render free-tier parser while the user is on the upload step.
   useEffect(() => {
@@ -24,27 +45,44 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
     });
   }, []);
 
-  const uploadFiles = async (files: FileList | File[]) => {
+  const addFiles = (files: FileList | File[]) => {
     const fileArray = Array.from(files).filter((file) =>
       file.name.toLowerCase().endsWith(".pdf"),
     );
 
     if (fileArray.length === 0) {
-      setError("Please upload at least one PDF bank statement.");
+      setError("Please add at least one PDF bank statement.");
       return;
     }
 
+    setError(null);
+    onSelectedFilesChange([
+      ...selectedFiles,
+      ...fileArray.map((file) => ({ id: crypto.randomUUID(), file })),
+    ]);
+  };
+
+  const removeFile = (id: string) => {
+    onSelectedFilesChange(selectedFiles.filter((entry) => entry.id !== id));
+  };
+
+  const analyzeFiles = async () => {
     if (!consent) {
       setError("You must authorize temporary processing before uploading.");
       return;
     }
 
-    setIsUploading(true);
+    if (selectedFiles.length === 0) {
+      setError("Add at least one PDF bank statement first.");
+      return;
+    }
+
+    setIsAnalyzing(true);
     setError(null);
 
     try {
       const formData = new FormData();
-      fileArray.forEach((file) => formData.append("files", file));
+      selectedFiles.forEach(({ file }) => formData.append("files", file));
 
       const response = await fetch("/api/parse", {
         method: "POST",
@@ -61,14 +99,14 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
       }
 
       onComplete(payload.transactions ?? []);
-    } catch (uploadError) {
+    } catch (analyzeError) {
       setError(
-        uploadError instanceof Error
-          ? uploadError.message
+        analyzeError instanceof Error
+          ? analyzeError.message
           : "Failed to parse statements.",
       );
     } finally {
-      setIsUploading(false);
+      setIsAnalyzing(false);
     }
   };
 
@@ -76,12 +114,12 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
     event.preventDefault();
     setIsDragging(false);
 
-    if (!uploadEnabled) {
+    if (!dropEnabled) {
       return;
     }
 
     if (event.dataTransfer.files.length > 0) {
-      void uploadFiles(event.dataTransfer.files);
+      addFiles(event.dataTransfer.files);
     }
   };
 
@@ -102,7 +140,7 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
         <input
           type="checkbox"
           checked={consent}
-          onChange={(e) => setConsent(e.target.checked)}
+          onChange={(e) => onConsentChange(e.target.checked)}
           className="mt-1 size-4 shrink-0 accent-[var(--color-accent)]"
         />
         <span>
@@ -115,7 +153,7 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
 
       <div
         onDragOver={(event) => {
-          if (!uploadEnabled) {
+          if (!dropEnabled) {
             return;
           }
           event.preventDefault();
@@ -124,14 +162,14 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         onClick={() => {
-          if (uploadEnabled) {
+          if (dropEnabled) {
             inputRef.current?.click();
           }
         }}
-        role={uploadEnabled ? "button" : undefined}
-        tabIndex={uploadEnabled ? 0 : -1}
+        role={dropEnabled ? "button" : undefined}
+        tabIndex={dropEnabled ? 0 : -1}
         onKeyDown={(event) => {
-          if (!uploadEnabled) {
+          if (!dropEnabled) {
             return;
           }
           if (event.key === "Enter" || event.key === " ") {
@@ -140,7 +178,7 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
           }
         }}
         className={`relative overflow-hidden rounded-[2rem] border px-6 py-16 text-center transition-all duration-300 md:py-24 ${
-          uploadEnabled
+          dropEnabled
             ? isDragging
               ? "border-accent bg-accent-soft scale-[1.01]"
               : `border-edge/80 bg-white/60 hover:border-accent/40 hover:bg-white/90 ${
@@ -154,40 +192,94 @@ export default function UploadStep({ onComplete }: UploadStepProps) {
           type="file"
           multiple
           accept=".pdf,application/pdf"
-          disabled={!uploadEnabled}
+          disabled={!dropEnabled}
           className="hidden"
           onChange={(event) => {
             if (event.target.files?.length) {
-              void uploadFiles(event.target.files);
+              addFiles(event.target.files);
+              event.target.value = "";
             }
           }}
         />
 
         <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-soft text-accent">
-          {isUploading ? (
-            <Loader2 className="h-6 w-6 animate-spin" />
-          ) : (
-            <Upload className="h-6 w-6" />
-          )}
+          <Upload className="h-6 w-6" />
         </div>
 
         <p className="font-display text-3xl tracking-[-0.02em] text-ink md:text-4xl">
-          {isUploading
-            ? "Parsing your statements…"
-            : uploadEnabled
-              ? "Drop your PDFs here"
-              : "Check the box above to begin"}
+          {dropEnabled ? "Drop your PDFs here" : "Check the box above to begin"}
         </p>
-        {uploadEnabled && (
+        {dropEnabled && (
           <p className="mt-3 text-sm text-muted">or click to browse files</p>
         )}
       </div>
+
+      {selectedFiles.length > 0 && (
+        <ul className="mx-auto max-w-2xl space-y-2">
+          {selectedFiles.map(({ id, file }) => (
+            <li
+              key={id}
+              className="flex items-center gap-3 rounded-2xl border border-edge bg-white/75 px-4 py-3"
+            >
+              <FileText className="h-4 w-4 shrink-0 text-accent" />
+              <span className="min-w-0 flex-1 truncate text-sm text-ink">
+                {file.name}
+              </span>
+              <span className="shrink-0 text-xs text-muted">
+                {(file.size / 1024).toFixed(0)} KB
+              </span>
+              <button
+                type="button"
+                onClick={() => removeFile(id)}
+                disabled={isAnalyzing}
+                className="shrink-0 rounded-lg p-1 text-muted transition-colors hover:bg-accent-soft hover:text-danger disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label={`Remove ${file.name}`}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {error && (
         <p className="mx-auto max-w-2xl rounded-2xl border border-danger/20 bg-white px-4 py-3 text-sm text-danger">
           {error}
         </p>
       )}
+
+      <div className="mx-auto flex max-w-2xl flex-col items-center gap-3">
+        {alreadyAnalyzed ? (
+          <>
+            <button
+              type="button"
+              onClick={onContinue}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+            >
+              Continue to review
+            </button>
+            <p className="text-xs text-muted">
+              Already analysed — add or remove a file to re-run parsing.
+            </p>
+          </>
+        ) : (
+          <button
+            type="button"
+            onClick={() => void analyzeFiles()}
+            disabled={!canAnalyze}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+          >
+            {isAnalyzing && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isAnalyzing
+              ? "Analysing statements…"
+              : selectedFiles.length > 0
+                ? `Analyse ${selectedFiles.length} file${selectedFiles.length === 1 ? "" : "s"}`
+                : "Analyse files"}
+          </button>
+        )}
+      </div>
+
+      {isAnalyzing && <AnalyzingOverlay fileCount={selectedFiles.length} />}
     </div>
   );
 }

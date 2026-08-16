@@ -9,15 +9,18 @@ import type { AnalysisResults, Transaction } from "@/lib/types";
 interface ReviewStepProps {
   transactions: Transaction[];
   onTransactionsChange: (transactions: Transaction[]) => void;
+  businessName: string;
+  onBusinessNameChange: (businessName: string) => void;
   onComplete: (results: AnalysisResults) => void;
 }
 
 export default function ReviewStep({
   transactions,
   onTransactionsChange,
+  businessName,
+  onBusinessNameChange,
   onComplete,
 }: ReviewStepProps) {
-  const [businessName, setBusinessName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,7 +92,7 @@ export default function ReviewStep({
           id="business-name"
           type="text"
           value={businessName}
-          onChange={(e) => setBusinessName(e.target.value)}
+          onChange={(e) => onBusinessNameChange(e.target.value)}
           placeholder="Acme Consulting LLC"
           className="w-full rounded-2xl border border-edge bg-white/80 px-4 py-3 outline-none transition-colors focus:border-accent"
         />

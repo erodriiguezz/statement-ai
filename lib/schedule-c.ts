@@ -37,6 +37,7 @@ Rules:
 - Negative amounts are usually business expenses — choose the best expense line; use 27a only when unsure.
 - Exclude transfers between own accounts, Zelle/Venmo to self, credit card payment transfers, owner draws, personal spending, loan principal payments, and ATM cash that is not a business expense.
 - Prefer conservative exclusions when a description looks like an internal transfer.
+- Some transactions include a "category" field — a Schedule C line the user pre-selected themselves. Treat it as a strong signal and use it unless the description or amount sign clearly contradicts it.
 - Infer taxYear from the transaction dates (most common calendar year).
 
 Return valid JSON only:
@@ -112,6 +113,7 @@ async function classifyTransactionsWithOpenAI(
             date: tx.date,
             description: tx.description,
             amount: tx.amount,
+            category: tx.category ?? null,
           })),
         }),
       },
@@ -214,39 +216,32 @@ function sleep(ms: number): Promise<void> {
   });
 }
 
-export function assembleScheduleC(
+/**
+ * Classification used when the AI didn't classify a transaction (or AI is
+ * unavailable). Respects the user's own category pick, if any, before
+ * falling back to a sign-based guess.
+ */
+function defaultClassification(tx: Transaction): string {
+  if (tx.category && isAllowedClassificationLine(tx.category)) {
+    return tx.category;
+  }
+  if (tx.amount > 0) {
+    return "1";
+  }
+  if (tx.amount < 0) {
+    return "27a";
+  }
+  return EXCLUDE_LINE;
+}
+
+/** Group classified transactions into Schedule C line items and totals. */
+function summarizeClassifications(
   transactions: Transaction[],
-  ai: AiClassificationResponse,
-  businessName?: string,
+  classified: Map<string, string>,
+  businessName: string | undefined,
+  taxYear: number,
+  notes: string,
 ): ScheduleCResult {
-  const byId = new Map(transactions.map((tx) => [tx.id, tx]));
-  const classified = new Map<string, string>();
-
-  for (const item of ai.classifications ?? []) {
-    if (!item?.transactionId || !byId.has(item.transactionId)) {
-      continue;
-    }
-    const line = String(item.line ?? "").trim();
-    if (!isAllowedClassificationLine(line)) {
-      classified.set(item.transactionId, "27a");
-      continue;
-    }
-    classified.set(item.transactionId, line);
-  }
-
-  // Any missing classification defaults by sign
-  for (const tx of transactions) {
-    if (!classified.has(tx.id)) {
-      if (tx.amount > 0) {
-        classified.set(tx.id, "1");
-      } else if (tx.amount < 0) {
-        classified.set(tx.id, "27a");
-      } else {
-        classified.set(tx.id, EXCLUDE_LINE);
-      }
-    }
-  }
-
   const buckets = new Map<string, Transaction[]>();
 
   for (const tx of transactions) {
@@ -315,6 +310,45 @@ export function assembleScheduleC(
     });
   }
 
+  return {
+    businessName: businessName?.trim() || undefined,
+    taxYear,
+    grossReceipts,
+    totalExpenses,
+    netProfit: round2(grossReceipts - totalExpenses),
+    lineItems,
+    notes,
+  };
+}
+
+export function assembleScheduleC(
+  transactions: Transaction[],
+  ai: AiClassificationResponse,
+  businessName?: string,
+): ScheduleCResult {
+  const byId = new Map(transactions.map((tx) => [tx.id, tx]));
+  const classified = new Map<string, string>();
+
+  for (const item of ai.classifications ?? []) {
+    if (!item?.transactionId || !byId.has(item.transactionId)) {
+      continue;
+    }
+    const line = String(item.line ?? "").trim();
+    if (!isAllowedClassificationLine(line)) {
+      classified.set(item.transactionId, "27a");
+      continue;
+    }
+    classified.set(item.transactionId, line);
+  }
+
+  // Any transaction the AI didn't classify falls back to the user's own
+  // category pick (if set), then a sign-based guess.
+  for (const tx of transactions) {
+    if (!classified.has(tx.id)) {
+      classified.set(tx.id, defaultClassification(tx));
+    }
+  }
+
   const excludedCount = [...classified.values()].filter(
     (line) => line === EXCLUDE_LINE,
   ).length;
@@ -327,15 +361,13 @@ export function assembleScheduleC(
     "Draft only — review categorizations before filing.",
   ].filter(Boolean);
 
-  return {
-    businessName: businessName?.trim() || undefined,
-    taxYear: resolveTaxYear(transactions, ai.taxYear),
-    grossReceipts,
-    totalExpenses,
-    netProfit: round2(grossReceipts - totalExpenses),
-    lineItems,
-    notes: noteParts.join(" "),
-  };
+  return summarizeClassifications(
+    transactions,
+    classified,
+    businessName,
+    resolveTaxYear(transactions, ai.taxYear),
+    noteParts.join(" "),
+  );
 }
 
 function pushBucket(
@@ -351,48 +383,24 @@ function pushBucket(
   buckets.set(line, [tx]);
 }
 
-function buildFallbackScheduleC(
+export function buildFallbackScheduleC(
   transactions: Transaction[],
   businessName: string | undefined,
   notes: string,
 ): ScheduleCResult {
-  const income = transactions.filter((tx) => tx.amount > 0);
-  const expenses = transactions.filter((tx) => tx.amount < 0);
-
-  const grossReceipts = round2(income.reduce((sum, tx) => sum + tx.amount, 0));
-  const totalExpenses = round2(
-    expenses.reduce((sum, tx) => sum + Math.abs(tx.amount), 0),
+  // No AI available — classify from the user's own category picks (if any),
+  // falling back to a sign-based guess for everything else.
+  const classified = new Map(
+    transactions.map((tx) => [tx.id, defaultClassification(tx)]),
   );
 
-  const lineItems: ScheduleCLineItem[] = [];
-
-  if (grossReceipts > 0) {
-    lineItems.push({
-      line: "1",
-      label: "Gross receipts or sales",
-      amount: grossReceipts,
-      transactions: income.map(formatTransactionRef),
-    });
-  }
-
-  if (totalExpenses > 0) {
-    lineItems.push({
-      line: "27a",
-      label: "Other expenses",
-      amount: totalExpenses,
-      transactions: expenses.map(formatTransactionRef),
-    });
-  }
-
-  return {
-    businessName: businessName?.trim() || undefined,
-    taxYear: resolveTaxYear(transactions, null),
-    grossReceipts,
-    totalExpenses,
-    netProfit: round2(grossReceipts - totalExpenses),
-    lineItems,
+  return summarizeClassifications(
+    transactions,
+    classified,
+    businessName,
+    resolveTaxYear(transactions, null),
     notes,
-  };
+  );
 }
 
 function resolveTaxYear(

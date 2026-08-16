@@ -3,6 +3,8 @@ export interface Transaction {
   date: string;
   description: string;
   amount: number;
+  /** Optional user-assigned Schedule C line (or "exclude") — hints the AI classifier. */
+  category?: string;
 }
 
 export interface ScheduleCLineItem {
