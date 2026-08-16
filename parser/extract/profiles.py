@@ -19,6 +19,11 @@ class LayoutProfile:
     match_keywords: tuple[str, ...]
     debit_section_headers: tuple[str, ...] = ()
     credit_section_headers: tuple[str, ...] = ()
+    # Sections that list two transactions per line in a repeating
+    # "date serial# amount date serial# amount" layout (e.g. TD Bank's
+    # "Checks Paid" table). Parsed with a dedicated dual-entry line parser
+    # instead of the single-amount-per-line logic.
+    checks_section_headers: tuple[str, ...] = ()
     ignore_section_headers: tuple[str, ...] = ()
     amount_mode: AmountMode = "section_unsigned"
     allow_short_dates: bool = True
@@ -277,19 +282,28 @@ TD_BANK = LayoutProfile(
     match_keywords=("td bank", "tdbank.com", "america's most convenient bank"),
     debit_section_headers=(
         "electronic payments",
+        "other withdrawals",
         "withdrawals",
-        "checks",
         "fees",
     ),
     credit_section_headers=(
         "electronic deposits",
+        "other credits",
         "deposits",
         "credits",
     ),
+    # "Checks Paid" lists two checks per line: DATE SERIAL# AMOUNT DATE SERIAL# AMOUNT
+    checks_section_headers=("checks paid", "checks"),
     ignore_section_headers=GENERIC_IGNORE,
     amount_mode="amount_balance_columns",
     allow_short_dates=True,
     multiline_descriptions=True,
+    skip_line_patterns=(
+        r"^posting\s+date\s+description",
+        r"^subtotal:",
+        r"^call\s+1-800",
+        r"fdic insured",
+    ),
 )
 
 PROFILES: tuple[LayoutProfile, ...] = (

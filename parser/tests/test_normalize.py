@@ -28,5 +28,11 @@ def test_extract_year_from_statement_date():
     assert extract_statement_year("Statement Date: 01/31/25") == 2025
 
 
+def test_extract_year_from_abbreviated_month_statement_period():
+    # TD Bank format: "Statement Period: Aug 01 2025-Aug 31 2025"
+    text = "Statement Period: Aug 01 2025-Aug 31 2025"
+    assert extract_statement_year(text) == 2025
+
+
 def test_skip_statement_page_false_positive():
     assert should_skip_line("Statement Date: 01/31/25 Page 1")

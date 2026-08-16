@@ -13,11 +13,23 @@ from .normalize import (
     find_date_match,
     is_header_or_column_label,
     normalize_date,
+    parse_amount,
     should_skip_line,
 )
 from .profiles import LayoutProfile
 
-SectionKind = Literal["debit", "credit", "ignore", "neutral"]
+SectionKind = Literal["debit", "credit", "ignore", "neutral", "checks"]
+
+# Matches TD Bank-style "Checks Paid" rows, which pack two check entries
+# side by side: "08/04 1506 750.00 08/20 1518 750.00". The second entry is
+# optional since a section with an odd number of checks ends with a lone
+# entry on its last line.
+CHECK_ROW_PATTERN = re.compile(
+    r"^(?P<date1>\d{1,2}/\d{1,2})\s+(?P<serial1>\d{2,7}\*?)\s+"
+    r"(?P<amount1>\d{1,3}(?:,\d{3})*\.\d{2})"
+    r"(?:\s+(?P<date2>\d{1,2}/\d{1,2})\s+(?P<serial2>\d{2,7}\*?)\s+"
+    r"(?P<amount2>\d{1,3}(?:,\d{3})*\.\d{2}))?\s*$"
+)
 
 
 def parse_transactions_from_text(
@@ -53,6 +65,13 @@ def parse_transactions_from_text(
         if is_header_or_column_label(line):
             continue
 
+        if section == "checks":
+            if current:
+                transactions.append(current)
+                current = None
+            transactions.extend(parse_check_row_line(line, year))
+            continue
+
         parsed = parse_transaction_line(line, profile, year, section)
         if parsed:
             if current:
@@ -78,7 +97,16 @@ def parse_transactions_from_text(
 def detect_section(line: str, profile: LayoutProfile) -> Optional[SectionKind]:
     # Strip common OCR bracket/noise prefixes: "[DEPOSITS AND ADDITIONS"
     lowered = re.sub(r"^[\W_]+", "", line.lower()).strip()
-    # Prefer longer / more specific headers by sorting descending length
+    # Prefer longer / more specific headers by sorting descending length.
+    # checks_section_headers is an explicit per-profile opt-in (a bank whose
+    # "Checks Paid" table actually lists per-check amounts), so it takes
+    # priority over the generic ignore list, which treats "checks paid" as
+    # a no-amount check-image section by default.
+    checks = sorted(profile.checks_section_headers, key=len, reverse=True)
+    for header in checks:
+        if header in lowered:
+            return "checks"
+
     ignore = sorted(profile.ignore_section_headers, key=len, reverse=True)
     for header in ignore:
         if header in lowered:
@@ -95,6 +123,33 @@ def detect_section(line: str, profile: LayoutProfile) -> Optional[SectionKind]:
             return "credit"
 
     return None
+
+
+def parse_check_row_line(line: str, default_year: Optional[int]) -> list[dict]:
+    """Parse a "Checks Paid" row that may hold one or two check entries."""
+    match = CHECK_ROW_PATTERN.match(line)
+    if not match:
+        return []
+
+    results: list[dict] = []
+    for idx in (1, 2):
+        date_raw = match.group(f"date{idx}")
+        if not date_raw:
+            continue
+        date_iso = normalize_date(date_raw, default_year=default_year)
+        amount = parse_amount(match.group(f"amount{idx}"))
+        if not date_iso or amount is None:
+            continue
+        serial = match.group(f"serial{idx}").rstrip("*")
+        results.append(
+            {
+                "id": str(uuid.uuid4()),
+                "date": date_iso,
+                "description": f"Check #{serial}",
+                "amount": -abs(amount),
+            }
+        )
+    return results
 
 
 def parse_transaction_line(

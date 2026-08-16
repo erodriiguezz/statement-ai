@@ -81,8 +81,8 @@ export default function ScheduleCResultView({ data }: ScheduleCResultViewProps) 
                   <p className="text-ink">{item.label}</p>
                   {item.transactions.length > 0 && (
                     <ul className="mt-2 space-y-1 text-xs text-muted">
-                      {item.transactions.map((tx) => (
-                        <li key={tx}>{tx}</li>
+                      {item.transactions.map((tx, index) => (
+                        <li key={`${item.line}-${index}`}>{tx}</li>
                       ))}
                     </ul>
                   )}

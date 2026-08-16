@@ -101,7 +101,7 @@ def parse_statement(
             "or OCR quality may be too low."
         )
 
-    return _dedupe_keep_repeats(transactions)
+    return transactions
 
 
 def parse_text(
@@ -113,29 +113,7 @@ def parse_text(
     """Parse pre-extracted / synthetic statement text (for tests)."""
     resolved = profile or resolve_profile(profile_id, text)
     year = extract_statement_year(text)
-    transactions = parse_transactions_from_text(
-        text, resolved, default_year=year
-    )
-    return _dedupe_keep_repeats(transactions)
-
-
-def _dedupe_keep_repeats(transactions: list[dict]) -> list[dict]:
-    """
-    Remove only exact consecutive duplicates from dual extraction paths.
-    Legitimate same-day identical txs (e.g. two mobile deposits) are kept.
-    """
-    if not transactions:
-        return []
-
-    result: list[dict] = []
-    prev_key = None
-    for tx in transactions:
-        key = (tx["date"], tx["description"], tx["amount"])
-        if key == prev_key:
-            continue
-        result.append(tx)
-        prev_key = key
-    return result
+    return parse_transactions_from_text(text, resolved, default_year=year)
 
 
 def page_count(pdf_path: Path) -> int:

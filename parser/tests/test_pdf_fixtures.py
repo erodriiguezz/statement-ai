@@ -28,29 +28,23 @@ def _require_pdf(name: str) -> Path:
     return path
 
 
-def test_republic_digital_pdf():
-    path = _require_pdf("replublic-bank.pdf")
-    expected = json.loads((EXPECTED / "replublic-bank.json").read_text())
+def test_digital_text_pdf():
+    """A PDF with a real embedded text layer (generic regional-bank layout)."""
+    path = _require_pdf("sample_digital_statement.pdf")
+    expected = json.loads((EXPECTED / "sample_digital_statement.json").read_text())
     txs = parse_statement(path)
     assert _strip_ids(txs) == expected["transactions"]
-    assert round(sum(tx["amount"] for tx in txs), 2) == 4026.47
+    assert round(sum(tx["amount"] for tx in txs), 2) == 544.50
 
 
 @pytest.mark.skipif(not shutil.which("tesseract"), reason="tesseract not installed")
-def test_chase_scanned_pdf():
-    path = _require_pdf("chase.pdf")
-    expected = json.loads((EXPECTED / "chase.json").read_text())
+def test_scanned_image_pdf():
+    """An image-only PDF (no text layer) that must go through the OCR path."""
+    path = _require_pdf("sample_scanned_statement.pdf")
+    expected = json.loads((EXPECTED / "sample_scanned_statement.json").read_text())
     txs = parse_statement(path)
     assert len(txs) == len(expected["transactions"])
-    assert round(sum(tx["amount"] for tx in txs), 2) == 2716.01
-    assert _strip_ids(txs) == expected["transactions"]
-
-
-@pytest.mark.skipif(not shutil.which("tesseract"), reason="tesseract not installed")
-def test_boa_scanned_pdf():
-    path = _require_pdf("boa.pdf")
-    expected = json.loads((EXPECTED / "boa.json").read_text())
-    txs = parse_statement(path)
+    assert round(sum(tx["amount"] for tx in txs), 2) == 524.75
     assert _strip_ids(txs) == expected["transactions"]
 
 

@@ -1,0 +1,55 @@
+{
+  "profile_id": "td_bank",
+  "transactions": [
+    {
+      "date": "2025-08-01",
+      "description": "DEBIT POS AP, AUT 080125 DDA PURCHASE AP SAMPLE STORE 2570 SAMPLE CITY * FL 4085404034387765",
+      "amount": -149.8
+    },
+    {
+      "date": "2025-08-01",
+      "description": "TD ZELLE RECEIVED, 999900A0AAAA Zelle SAMPLE PERSON",
+      "amount": 500.0
+    },
+    {
+      "date": "2025-08-04",
+      "description": "Check #1001",
+      "amount": -300.0
+    },
+    {
+      "date": "2025-08-06",
+      "description": "DEPOSIT",
+      "amount": 2000.0
+    },
+    {
+      "date": "2025-08-08",
+      "description": "Check #1003",
+      "amount": -500.0
+    },
+    {
+      "date": "2025-08-12",
+      "description": "TD ZELLE SENT, 522400F0ISY3 Zelle SAMPLE VENDOR",
+      "amount": -150.2
+    },
+    {
+      "date": "2025-08-20",
+      "description": "Check #1002",
+      "amount": -250.0
+    },
+    {
+      "date": "2025-08-25",
+      "description": "Check #1004",
+      "amount": -500.0
+    },
+    {
+      "date": "2025-08-25",
+      "description": "DEBIT TRANSFER, TD Bank, N.A LOAN PAYMENT 12345678",
+      "amount": -100.0
+    },
+    {
+      "date": "2025-08-27",
+      "description": "CREDIT FUNDING",
+      "amount": 50.0
+    }
+  ]
+}

@@ -48,6 +48,16 @@ MONTH_NAME_PERIOD = re.compile(
     re.IGNORECASE,
 )
 
+# "Statement Period: Aug 01 2025-Aug 31 2025" (abbreviated month, no comma,
+# dash-joined range with no spaces around the dash) — seen on TD Bank
+# statements. Captures the period-end year.
+STATEMENT_PERIOD_ABBR_MONTH = re.compile(
+    r"statement\s+period\s*:?\s*"
+    r"[A-Za-z]+\.?\s+\d{1,2}\s+\d{4}\s*[-–to]+\s*"
+    r"[A-Za-z]+\.?\s+\d{1,2}\s+(?P<year>\d{4})",
+    re.IGNORECASE,
+)
+
 DEFAULT_SKIP_KEYWORDS = (
     "beginning balance",
     "ending balance",
@@ -147,6 +157,13 @@ def extract_statement_year(text: str) -> Optional[int]:
         normalized = normalize_date(match.group(1))
         if normalized:
             return int(normalized[:4])
+
+    abbr_month_match = STATEMENT_PERIOD_ABBR_MONTH.search(text)
+    if abbr_month_match:
+        try:
+            return int(abbr_month_match.group("year"))
+        except ValueError:
+            pass
 
     month_match = MONTH_NAME_PERIOD.search(text)
     if month_match:
