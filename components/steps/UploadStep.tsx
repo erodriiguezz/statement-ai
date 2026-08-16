@@ -6,6 +6,17 @@ import { FileText, Loader2, Upload, X } from "lucide-react";
 import AnalyzingOverlay from "@/components/AnalyzingOverlay";
 import type { Transaction } from "@/lib/types";
 
+const ANALYSIS_MESSAGES = [
+  "Uploading your statements…",
+  "Reading PDF pages…",
+  "Detecting your bank's layout…",
+  "Running OCR on scanned pages…",
+  "Extracting transaction lines…",
+  "Normalizing dates and amounts…",
+  "Matching known statement formats…",
+  "Wrapping up…",
+];
+
 export interface SelectedFile {
   id: string;
   file: File;
@@ -279,7 +290,12 @@ export default function UploadStep({
         )}
       </div>
 
-      {isAnalyzing && <AnalyzingOverlay fileCount={selectedFiles.length} />}
+      {isAnalyzing && (
+        <AnalyzingOverlay
+          title={`Analysing ${selectedFiles.length} statement${selectedFiles.length === 1 ? "" : "s"}`}
+          messages={ANALYSIS_MESSAGES}
+        />
+      )}
     </div>
   );
 }

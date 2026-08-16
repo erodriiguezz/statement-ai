@@ -3,8 +3,20 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
+import AnalyzingOverlay from "@/components/AnalyzingOverlay";
 import TransactionTable from "@/components/TransactionTable";
 import type { AnalysisResults, Transaction } from "@/lib/types";
+
+const SCHEDULE_C_MESSAGES = [
+  "Reading transaction descriptions…",
+  "Matching transactions to Schedule C lines…",
+  "Telling expenses apart from transfers…",
+  "Applying your category hints…",
+  "Grouping income and expense totals…",
+  "Detecting your tax year…",
+  "Double-checking edge cases…",
+  "Wrapping up…",
+];
 
 interface ReviewStepProps {
   transactions: Transaction[];
