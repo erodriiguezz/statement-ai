@@ -39,7 +39,7 @@ def resolve_tesseract_cmd() -> Optional[str]:
 def ocr_status() -> dict:
     missing_packages = []
     try:
-        import fitz  # noqa: F401
+        import pymupdf  # noqa: F401
     except ImportError:
         missing_packages.append("pymupdf")
     try:
@@ -87,7 +87,7 @@ def ensure_ocr_deps() -> str:
 
 def ocr_page(pdf_path: Path, page_index: int) -> str:
     ensure_ocr_deps()
-    import fitz
+    import pymupdf as fitz
     import pytesseract
     from PIL import Image
 
