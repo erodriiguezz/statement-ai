@@ -130,6 +130,13 @@ export default function ReviewStep({
         {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
         {isSubmitting ? "Generating draft…" : "Confirm & generate draft"}
       </button>
+
+      {isSubmitting && (
+        <AnalyzingOverlay
+          title="Generating your Schedule C draft"
+          messages={SCHEDULE_C_MESSAGES}
+        />
+      )}
     </div>
   );
 }
