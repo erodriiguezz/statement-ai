@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
+
 import DateCell from "@/components/DateCell";
 import { EXCLUDE_LINE, SCHEDULE_C_LINES } from "@/lib/schedule-c-lines";
 import type { Transaction } from "@/lib/types";
@@ -105,7 +107,7 @@ export default function TransactionTable({
                     onChange={(e) =>
                       updateTransaction(tx.id, "description", e.target.value)
                     }
-                    className="w-full min-w-0 rounded-xl border border-transparent bg-transparent py-2 outline-none focus:border-edge focus:bg-white focus:px-2"
+                    className="w-full min-w-0 rounded-xl border border-transparent bg-transparent py-2 outline-none transition-colors focus:border-edge focus:bg-white"
                     placeholder="Transaction description"
                   />
                 </td>
@@ -117,26 +119,29 @@ export default function TransactionTable({
                     onChange={(e) =>
                       updateTransaction(tx.id, "amount", e.target.value)
                     }
-                    className="no-spinner w-full rounded-xl border border-transparent bg-transparent py-2 text-right font-mono-amount outline-none focus:border-edge focus:bg-white focus:px-2"
+                    className="no-spinner w-full rounded-xl border border-transparent bg-transparent py-2 text-right font-mono-amount outline-none transition-colors focus:border-edge focus:bg-white"
                     step="0.01"
                   />
                 </td>
                 <td className="px-5 py-2.5 align-middle">
-                  <select
-                    value={tx.category ?? ""}
-                    onChange={(e) =>
-                      updateTransaction(tx.id, "category", e.target.value)
-                    }
-                    className="w-full min-w-0 cursor-pointer rounded-xl border border-transparent bg-transparent py-2 text-ink outline-none focus:border-edge focus:bg-white focus:px-2"
-                  >
-                    <option value="">Let AI decide</option>
-                    <option value={EXCLUDE_LINE}>Exclude (personal/transfer)</option>
-                    {SCHEDULE_C_LINES.map((line) => (
-                      <option key={line.line} value={line.line}>
-                        {line.line} — {line.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={tx.category ?? ""}
+                      onChange={(e) =>
+                        updateTransaction(tx.id, "category", e.target.value)
+                      }
+                      className="w-full min-w-0 cursor-pointer appearance-none rounded-xl border border-transparent bg-transparent py-2 pr-6 text-ink outline-none transition-colors focus:border-edge focus:bg-white"
+                    >
+                      <option value="">Let AI decide</option>
+                      <option value={EXCLUDE_LINE}>Exclude (personal/transfer)</option>
+                      {SCHEDULE_C_LINES.map((line) => (
+                        <option key={line.line} value={line.line}>
+                          {line.line} — {line.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                  </div>
                 </td>
                 <td className="px-4 py-2.5 text-center align-middle">
                   <button

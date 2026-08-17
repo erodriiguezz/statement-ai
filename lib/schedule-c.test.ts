@@ -44,6 +44,8 @@ assert.equal(result.totalExpenses, 45.5);
 assert.equal(result.netProfit, 1154.5);
 assert.equal(result.lineItems.length, 2);
 assert.ok(result.notes.includes("excluded"));
+assert.equal(result.excludedTransactions.length, 1);
+assert.ok(result.excludedTransactions[0].includes("TRANSFER TO SAVINGS"));
 
 console.log("schedule-c assemble tests passed");
 
@@ -72,5 +74,6 @@ const fallback = buildFallbackScheduleC(categorizedTxs, "Demo LLC", "fallback no
 assert.equal(fallback.lineItems.length, 1);
 assert.equal(fallback.lineItems[0].line, "22");
 assert.equal(fallback.totalExpenses, 45.5);
+assert.equal(fallback.excludedTransactions.length, 1);
 
 console.log("schedule-c category-hint tests passed");

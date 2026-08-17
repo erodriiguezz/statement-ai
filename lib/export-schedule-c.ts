@@ -1,19 +1,7 @@
 import ExcelJS from "exceljs";
 
+import { parseTransactionRef } from "@/lib/transaction-ref";
 import type { ScheduleCResult } from "@/lib/types";
-
-/** Splits a "date | description | amount" ref back into its parts. */
-function parseTransactionRef(ref: string): {
-  date: string;
-  description: string;
-  amount: number;
-} {
-  const [date = "", description = "", amountText = ""] = ref
-    .split(" | ")
-    .map((part) => part.trim());
-  const amount = Number.parseFloat(amountText);
-  return { date, description, amount: Number.isFinite(amount) ? amount : 0 };
-}
 
 function buildFilename(data: ScheduleCResult): string {
   const business = data.businessName?.trim().replace(/[^\w-]+/g, "_") || "schedule-c";
@@ -73,6 +61,19 @@ export async function exportScheduleCToXlsx(data: ScheduleCResult): Promise<void
     }
   }
   transactions.getColumn("amount").numFmt = "$#,##0.00";
+
+  const excluded = workbook.addWorksheet("Personal (Excluded)");
+  excluded.columns = [
+    { header: "Date", key: "date", width: 14 },
+    { header: "Description", key: "description", width: 48 },
+    { header: "Amount", key: "amount", width: 16 },
+  ];
+  excluded.getRow(1).font = { bold: true };
+  for (const ref of data.excludedTransactions) {
+    const { date, description, amount } = parseTransactionRef(ref);
+    excluded.addRow({ date, description, amount });
+  }
+  excluded.getColumn("amount").numFmt = "$#,##0.00";
 
   const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer], {

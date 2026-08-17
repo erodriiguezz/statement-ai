@@ -21,6 +21,8 @@ export interface ScheduleCResult {
   totalExpenses: number;
   netProfit: number;
   lineItems: ScheduleCLineItem[];
+  /** Transactions marked personal/transfer — excluded from Schedule C totals. */
+  excludedTransactions: string[];
   notes: string;
 }
 

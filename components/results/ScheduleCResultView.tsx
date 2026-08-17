@@ -1,3 +1,4 @@
+import { parseTransactionRef } from "@/lib/transaction-ref";
 import type { ScheduleCResult } from "@/lib/types";
 
 interface ScheduleCResultViewProps {
@@ -101,6 +102,74 @@ export default function ScheduleCResultView({ data }: ScheduleCResultViewProps) 
           {data.notes}
         </div>
       )}
+
+      {data.excludedTransactions.length > 0 && (
+        <PersonalTransactionsSection refs={data.excludedTransactions} />
+      )}
+    </div>
+  );
+}
+
+function PersonalTransactionsSection({ refs }: { refs: string[] }) {
+  const transactions = refs.map(parseTransactionRef);
+  const total = transactions.reduce((sum, tx) => sum + tx.amount, 0);
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h4 className="font-display text-2xl tracking-[-0.02em] text-ink">
+          Personal
+        </h4>
+        <p className="mt-1 text-sm text-muted">
+          Transfers, owner draws, and personal spending — left out of the
+          Schedule C totals above.
+        </p>
+      </div>
+
+      <div className="overflow-x-auto rounded-3xl border border-edge bg-white/50">
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="text-left text-muted">
+              <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.08em]">
+                Date
+              </th>
+              <th className="px-5 py-4 text-xs font-semibold uppercase tracking-[0.08em]">
+                Description
+              </th>
+              <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-[0.08em]">
+                Amount
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactions.map((tx, index) => (
+              <tr
+                key={`${tx.date}-${index}`}
+                className="border-t border-edge/70"
+              >
+                <td className="px-5 py-3 text-ink">{tx.date}</td>
+                <td className="px-5 py-3 text-ink">{tx.description}</td>
+                <td className="px-5 py-3 text-right font-mono-amount text-ink">
+                  {formatCurrency(tx.amount)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-edge/70">
+              <td
+                colSpan={2}
+                className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-muted"
+              >
+                Total excluded
+              </td>
+              <td className="px-5 py-3 text-right font-mono-amount font-medium text-ink">
+                {formatCurrency(total)}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
     </div>
   );
 }

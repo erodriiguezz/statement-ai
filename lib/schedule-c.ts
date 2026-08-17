@@ -4,6 +4,7 @@ import {
   SCHEDULE_C_LINES,
   isAllowedClassificationLine,
 } from "@/lib/schedule-c-lines";
+import { formatTransactionRef } from "@/lib/transaction-ref";
 import type { ScheduleCLineItem, ScheduleCResult, Transaction } from "@/lib/types";
 
 interface AiClassification {
@@ -243,10 +244,15 @@ function summarizeClassifications(
   notes: string,
 ): ScheduleCResult {
   const buckets = new Map<string, Transaction[]>();
+  const excludedTransactions: Transaction[] = [];
 
   for (const tx of transactions) {
     const line = classified.get(tx.id) ?? EXCLUDE_LINE;
-    if (line === EXCLUDE_LINE || tx.amount === 0) {
+    if (line === EXCLUDE_LINE) {
+      excludedTransactions.push(tx);
+      continue;
+    }
+    if (tx.amount === 0) {
       continue;
     }
 
@@ -317,6 +323,7 @@ function summarizeClassifications(
     totalExpenses,
     netProfit: round2(grossReceipts - totalExpenses),
     lineItems,
+    excludedTransactions: excludedTransactions.map(formatTransactionRef),
     notes,
   };
 }
@@ -430,10 +437,6 @@ function resolveTaxYear(
   }
 
   return [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
-}
-
-function formatTransactionRef(tx: Transaction): string {
-  return `${tx.date} | ${tx.description} | ${tx.amount.toFixed(2)}`;
 }
 
 function round2(value: number): number {
