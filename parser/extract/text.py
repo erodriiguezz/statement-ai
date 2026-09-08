@@ -158,7 +158,11 @@ def parse_transaction_line(
     default_year: Optional[int],
     section: SectionKind,
 ) -> Optional[dict]:
-    date_match = find_date_match(line, allow_short=profile.allow_short_dates)
+    date_match = find_date_match(
+        line,
+        allow_short=profile.allow_short_dates,
+        prefer_leading=profile.prefer_leading_date,
+    )
     if not date_match:
         return None
 
@@ -167,7 +171,9 @@ def parse_transaction_line(
     if not date_iso:
         return None
 
-    remainder = line[date_match.end() :].strip(" -|:")
+    # Strip separators around the description but keep a trailing "-" — it is a
+    # debit sign in trailing-minus layouts and must survive for find_amounts.
+    remainder = line[date_match.end() :].lstrip(" -|:").rstrip(" |:")
     amounts = find_amounts(remainder)
     if not amounts:
         return None

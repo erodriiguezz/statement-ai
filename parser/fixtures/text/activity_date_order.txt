@@ -1,0 +1,18 @@
+YOU 1ST BUSINESS CHECKING                Image Statement
+Account Number             Ending 4061   Statement Dates  1/01/23 thru  1/31/23
+Previous Balance              1,000.00   Days in the statement period        31
+ACTIVITY IN DATE ORDER
+Date      Description                                  Amount
+1/03     ACH DEPOSIT PAYROLL DIRECT                   422.00
+1/03     DBT CRD 2043 12/29/22 BG2FV84                  2.32-
+GENERIC FUEL STOP
+ANYTOWN       TN C#2385
+1/06     PAYMENT    UTILITY COOP                       955.17-
+9900002400        01/06/23
+1/11     MOBILE DEPOSIT                             3,650.00
+SUMMARY BY CHECK NUMBER
+1/03       1183                684.95    1/04       1186*               243.00
+1/24       1202*               441.00
+DAILY BALANCE INFORMATION
+Date  Balance        Date  Balance
+1/01        1,000.00         1/03        1,419.68

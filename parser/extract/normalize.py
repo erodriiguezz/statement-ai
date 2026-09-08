@@ -6,11 +6,14 @@ import re
 from datetime import datetime
 from typing import Optional
 
+# A trailing "-" (e.g. "955.17-") is how some core-banking systems mark a
+# debit, so the pattern accepts an optional minus on either end; parse_amount
+# resolves the sign.
 AMOUNT_PATTERN = re.compile(
     r"(?P<amount>"
-    r"\(?-?\$?\s?\d{1,3}(?:,\d{3})*(?:\.\d{2})\)?"
+    r"\(?-?\$?\s?\d{1,3}(?:,\d{3})*(?:\.\d{2})\)?-?"
     r"|"
-    r"\(?-?\$?\s?\d+\.\d{2}\)?"
+    r"\(?-?\$?\s?\d+\.\d{2}\)?-?"
     r")"
 )
 
@@ -37,6 +40,12 @@ STATEMENT_DATE_PATTERNS = [
     ),
     re.compile(
         r"ending\s+balance\s+on\s+(\d{1,2}/\d{1,2}/\d{2,4})",
+        re.IGNORECASE,
+    ),
+    # "Statement Dates 1/01/23 thru 1/31/23" — captures the period-end date.
+    re.compile(
+        r"statement\s+dates?\s*:?\s*\d{1,2}/\d{1,2}/\d{2,4}\s*"
+        r"(?:thru|through|[-–to])+\s*(\d{1,2}/\d{1,2}/\d{2,4})",
         re.IGNORECASE,
     ),
 ]
@@ -98,6 +107,10 @@ def parse_amount(raw: str) -> Optional[float]:
     if cleaned.startswith("-"):
         negative = True
         cleaned = cleaned[1:]
+    # Trailing-minus notation for debits, e.g. "955.17-".
+    if cleaned.endswith("-"):
+        negative = True
+        cleaned = cleaned[:-1]
     try:
         value = round(float(cleaned), 2)
     except ValueError:
@@ -174,11 +187,21 @@ def extract_statement_year(text: str) -> Optional[int]:
     return None
 
 
+LEADING_DATE_PATTERN = re.compile(r"^\s*(?P<date>\d{1,2}/\d{1,2}(?:/\d{2,4})?)")
+
+
 def find_date_match(
     line: str,
     *,
     allow_short: bool = True,
+    prefer_leading: bool = False,
 ) -> Optional[re.Match[str]]:
+    # For layouts whose posting date leads the line, anchor on that date so an
+    # embedded date later in the line (e.g. a purchase date) is not picked.
+    if prefer_leading:
+        leading = LEADING_DATE_PATTERN.match(line)
+        if leading:
+            return leading
     for pattern in DATE_FULL_PATTERNS:
         match = pattern.search(line)
         if match:
