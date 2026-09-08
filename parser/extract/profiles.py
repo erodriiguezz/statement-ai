@@ -32,6 +32,11 @@ class LayoutProfile:
     # When True, unsigned amounts in a neutral section stay as-is (may be wrong);
     # prefer section headers or signed/column modes.
     require_section_for_unsigned: bool = False
+    # When True, the posting date is the date at the start of the line; any
+    # later date on the line (e.g. a purchase date embedded in the description)
+    # is ignored. Needed for single-column "activity in date order" layouts
+    # whose debit lines read "1/03 DBT CRD 2043 12/29/22 ... 2.32-".
+    prefer_leading_date: bool = False
 
 
 GENERIC_IGNORE = (
@@ -306,6 +311,37 @@ TD_BANK = LayoutProfile(
     ),
 )
 
+# Single-column "Activity in Date Order" statements produced by several
+# community-bank core systems (e.g. "YOU 1ST BUSINESS CHECKING" image
+# statements). Debits and credits share one date-ordered list with no
+# debit/credit section headers; debits carry a trailing minus ("2.32-") and
+# credits are unsigned. Each line begins with the posting date, but debit
+# descriptions embed a second (purchase) date, so leading-date anchoring is
+# required. The trailing "DAILY BALANCE INFORMATION" grid is dated balance
+# rows that must be ignored rather than parsed as transactions.
+ACTIVITY_DATE_ORDER = LayoutProfile(
+    id="activity_date_order",
+    match_keywords=("activity in date order",),
+    # "Summary by Check Number" packs two checks per line, like TD's table:
+    # "1/03 1183 684.95 1/04 1186* 243.00".
+    checks_section_headers=("summary by check number",),
+    ignore_section_headers=GENERIC_IGNORE + ("daily balance information",),
+    amount_mode="signed",
+    allow_short_dates=True,
+    multiline_descriptions=True,
+    prefer_leading_date=True,
+    skip_line_patterns=(
+        r"^date\s+description",
+        r"activity in date order",
+        r"account number",
+        r"checking account",
+        r"business checking",
+        r"image statement",
+        r"\(continued\)",
+        r"page\s+\d+\s+of\s+\d+",
+    ),
+)
+
 PROFILES: tuple[LayoutProfile, ...] = (
     CHASE,
     BANK_OF_AMERICA,
@@ -316,6 +352,7 @@ PROFILES: tuple[LayoutProfile, ...] = (
     PNC,
     TRUIST,
     TD_BANK,
+    ACTIVITY_DATE_ORDER,
     GENERIC,
 )
 

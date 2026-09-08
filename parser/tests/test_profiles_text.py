@@ -33,6 +33,7 @@ def _strip_ids(transactions: list[dict]) -> list[dict]:
         "td_bank",
         "td_bank_business",
         "generic_regional",
+        "activity_date_order",
     ],
 )
 def test_synthetic_bank_profiles(stem: str):

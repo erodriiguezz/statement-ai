@@ -14,6 +14,18 @@ def test_parse_amount_parentheses_and_currency():
     assert parse_amount("1,000.00") == 1000.0
 
 
+def test_parse_amount_trailing_minus_is_negative():
+    # Trailing-minus debit notation used by some core-banking systems.
+    assert parse_amount("955.17-") == -955.17
+    assert parse_amount("2.32-") == -2.32
+    assert parse_amount("422.00") == 422.0
+
+
+def test_extract_year_from_statement_dates_range():
+    # "Statement Dates 1/01/23 thru 1/31/23" (plural, "thru"-joined range).
+    assert extract_statement_year("Statement Dates  1/01/23 thru  1/31/23") == 2023
+
+
 def test_normalize_short_date_uses_default_year():
     assert normalize_date("1/07", default_year=2025) == "2025-01-07"
     assert normalize_date("01/31/25") == "2025-01-31"
