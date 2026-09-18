@@ -34,6 +34,7 @@ def _strip_ids(transactions: list[dict]) -> list[dict]:
         "td_bank_business",
         "generic_regional",
         "activity_date_order",
+        "republic_bank",
     ],
 )
 def test_synthetic_bank_profiles(stem: str):
@@ -75,6 +76,20 @@ def test_td_bank_business_reconciles_to_statement_totals():
     assert total_debits == -1950.0
     # Deposits 2,000.00 + Electronic Deposits 500.00 + Other Credits 50.00
     assert total_credits == 2550.0
+
+
+def test_republic_bank_reconciles_to_statement_totals():
+    """Summary/fee/daily-balance rows must not flip signs or become transactions."""
+    text = (TEXT_FIXTURES / "republic_bank.txt").read_text()
+    txs = parse_text(text)
+    total_debits = round(sum(tx["amount"] for tx in txs if tx["amount"] < 0), 2)
+    total_credits = round(sum(tx["amount"] for tx in txs if tx["amount"] > 0), 2)
+    # Account summary: Deposits $2,000.25; Withdrawals $1,035.50 + Fees $44.00
+    assert total_credits == 2000.25
+    assert total_debits == -1079.5
+    # Checks are listed under Withdrawals; the Checks Paid table must not repeat them
+    checks = [tx["description"] for tx in txs if "check" in tx["description"].lower()]
+    assert checks == ["Check 101", "Check 102"]
 
 
 def test_republic_style_multiline_and_signs():
