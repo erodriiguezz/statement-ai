@@ -1,0 +1,70 @@
+Page: 1 of 3
+Statement Date: 01/01/2026 thru 01/30/2026
+Primary Account: ****1234
+Address Service Requested
+EXAMPLE HOLDINGS LLC
+100 MAIN ST
+ANYTOWN TN 37000-0000
+Summary of Account(s) Routing Number 083001314
+Account Type Beginning Balance Deposits Interest Paid* Withdrawals Fees Ending Balance
+****1234 CK $500.00 $2,000.25 $0.00 $1,035.50 $44.00 $1,420.75
+Account Details MoneyMGR Free Business ****1234
+Deposits
+Date Description Amount
+01/05/2026 Eff. 01-03 Deposit Internet Transfer from XXXX5678 - Funds Transfer via Online $1,000.00
+01/06/2026 Descriptive Deposit 0 Business Mobile Deposit $750.00
+01/20/2026 Deposit Internet Transfer from XXXX5678 - Funds Transfer via Online $250.25
+Withdrawals
+Date Description Amount
+01/02/2026 External Withdrawal ACME CARD ONLINE - PAYMENT JANE DOE -$150.00
+01/02/2026 Check 101 -$300.00
+01/02/2026 Overdraft Fee -$36.00
+01/02/2026 Consecutive Days OD Fee -$8.00
+Checks, Debit Card and ATM transactions outstanding To balance your checkbook follow these simple steps.
+
+Enter BALANCE shown
+on this statement
+
+Add DEPOSITS made
+after statement cycle
+
+SUBTRACT checks
+outstanding
+
+Error resolution notice on periodic statements (§1005.8(b)) (Consumer Accounts only)
+In Case of Errors or Questions About Your Electronic Transfers Telephone us at 1-800-555-0100 or Write us at Dispute
+Operations, Republic Bank, 601 West Market Street, Louisville, KY 40202-2700 as soon as you can.
+MEMBER FDIC
+
+March 25, 2022
+
+Page: 2 of 3
+Statement Date: 01/01/2026 thru 01/30/2026
+Primary Account: ****1234
+Account Details continued MoneyMGR Free Business ****1234
+Withdrawals
+Date Description Amount
+01/07/2026 External Withdrawal CITY UTILITIES - BILL PAY JANE DOE -$120.50
+01/14/2026 Point Of Sale Withdrawal Example ADS 1 Example WayAnytown CAUS -$45.00
+Card #1234
+01/16/2026 Check 102 -$400.00
+01/26/2026 Point Of Sale Withdrawal SAMPLE PEST 10 CIRCLE RDANYTOWN TNUS Card -$20.00
+#1234
+Checks Paid
+Date Check No. Amount Date Check No. Amount Date Check No. Amount
+01/02 101 $300.00 01/16 102* $400.00
+(*INDICATES A BREAK IN CHECK NUMBER SEQUENCE, (E) INDICATES AN ELECTRONIC CHECK)
+Summary of Insufficient Funds Charge; NSF Returned Item Fee and Overdraft Paid Item Fee
+Description of Fees Total For This Period Total Year-To-Date
+Total Overdraft Fees $44.00 $44.00
+Total Returned Item Fees $0.00 $0.00
+Daily Balance
+Date Amount Date Amount Date Amount
+01/01 $500.00 01/07 $1,635.50 01/20 $1,440.75
+01/02 $6.00 01/14 $1,590.50 01/26 $1,420.75
+01/05 $1,006.00 01/16 $1,190.50 01/30 $1,420.75
+01/06 $1,756.00
+Page: 3 of 3
+Statement Date: 01/01/2026 thru 01/30/2026
+Primary Account: ****1234
+#101 01/02/2026 $300.00 #102 01/16/2026 $400.00

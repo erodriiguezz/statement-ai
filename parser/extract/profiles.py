@@ -342,6 +342,34 @@ ACTIVITY_DATE_ORDER = LayoutProfile(
     ),
 )
 
+# Republic Bank & Trust ("MoneyMGR" business checking). Transactions sit under
+# bare "Deposits" / "Withdrawals" headers; withdrawals carry an explicit
+# "-$200.00" and deposits are unsigned. The account-summary column row
+# ("... Deposits Interest Paid* Withdrawals Fees Ending Balance") and the fee
+# summary would hijack GENERIC's "fees" debit header, so this profile only
+# keys sections on "deposits" / "withdrawals". Page 1's text layer never says
+# "Republic Bank" (only the scanned back page does), so detection also keys on
+# the routing number and product name.
+REPUBLIC_BANK = LayoutProfile(
+    id="republic_bank",
+    match_keywords=("republic bank", "083001314", "moneymgr"),
+    debit_section_headers=("withdrawals",),
+    credit_section_headers=("deposits",),
+    # "Checks Paid" (already in GENERIC_IGNORE) repeats checks listed under
+    # Withdrawals ("Check 115 -$480.00"), so it stays ignored to avoid
+    # duplicates. "Daily Balance" is followed by the headerless check-image
+    # page, which the ignore section also swallows.
+    ignore_section_headers=GENERIC_IGNORE
+    + (
+        "summary of account",
+        "summary of insufficient funds",
+        "daily balance",
+    ),
+    amount_mode="signed",
+    allow_short_dates=True,
+    multiline_descriptions=True,
+)
+
 PROFILES: tuple[LayoutProfile, ...] = (
     CHASE,
     BANK_OF_AMERICA,
@@ -353,6 +381,7 @@ PROFILES: tuple[LayoutProfile, ...] = (
     TRUIST,
     TD_BANK,
     ACTIVITY_DATE_ORDER,
+    REPUBLIC_BANK,
     GENERIC,
 )
 

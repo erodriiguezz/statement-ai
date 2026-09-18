@@ -1,0 +1,60 @@
+{
+  "profile_id": "republic_bank",
+  "transactions": [
+    {
+      "date": "2026-01-02",
+      "description": "Check 101",
+      "amount": -300.0
+    },
+    {
+      "date": "2026-01-02",
+      "description": "Consecutive Days OD Fee",
+      "amount": -8.0
+    },
+    {
+      "date": "2026-01-02",
+      "description": "External Withdrawal ACME CARD ONLINE - PAYMENT JANE DOE",
+      "amount": -150.0
+    },
+    {
+      "date": "2026-01-02",
+      "description": "Overdraft Fee",
+      "amount": -36.0
+    },
+    {
+      "date": "2026-01-05",
+      "description": "Eff. 01-03 Deposit Internet Transfer from XXXX5678 - Funds Transfer via Online",
+      "amount": 1000.0
+    },
+    {
+      "date": "2026-01-06",
+      "description": "Descriptive Deposit 0 Business Mobile Deposit",
+      "amount": 750.0
+    },
+    {
+      "date": "2026-01-07",
+      "description": "External Withdrawal CITY UTILITIES - BILL PAY JANE DOE",
+      "amount": -120.5
+    },
+    {
+      "date": "2026-01-14",
+      "description": "Point Of Sale Withdrawal Example ADS 1 Example WayAnytown CAUS Card #1234",
+      "amount": -45.0
+    },
+    {
+      "date": "2026-01-16",
+      "description": "Check 102",
+      "amount": -400.0
+    },
+    {
+      "date": "2026-01-20",
+      "description": "Deposit Internet Transfer from XXXX5678 - Funds Transfer via Online",
+      "amount": 250.25
+    },
+    {
+      "date": "2026-01-26",
+      "description": "Point Of Sale Withdrawal SAMPLE PEST 10 CIRCLE RDANYTOWN TNUS Card #1234",
+      "amount": -20.0
+    }
+  ]
+}
