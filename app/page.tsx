@@ -21,6 +21,8 @@ export default function Home() {
   const [analyzedFileIds, setAnalyzedFileIds] = useState<string[]>([]);
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  // Reconciliation mismatches from the parser, shown on the Review step.
+  const [parseWarnings, setParseWarnings] = useState<string[]>([]);
   const [businessName, setBusinessName] = useState("");
   const [results, setResults] = useState<AnalysisResults | null>(null);
 
@@ -47,8 +49,12 @@ export default function Home() {
     ...(results ? [2] : []),
   ];
 
-  const handleUploadComplete = (uploadedTransactions: Transaction[]) => {
+  const handleUploadComplete = (
+    uploadedTransactions: Transaction[],
+    warnings: string[],
+  ) => {
     setTransactions(uploadedTransactions);
+    setParseWarnings(warnings);
     setAnalyzedFileIds(selectedFiles.map((f) => f.id));
     setResults(null);
     setActiveStep(1);
@@ -120,6 +126,7 @@ export default function Home() {
         {activeStep === 1 && (
           <ReviewStep
             transactions={transactions}
+            parseWarnings={parseWarnings}
             onTransactionsChange={handleTransactionsChange}
             businessName={businessName}
             onBusinessNameChange={setBusinessName}

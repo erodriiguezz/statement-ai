@@ -58,6 +58,47 @@ GENERIC_IGNORE = (
     "member fdic",
 )
 
+# Section headers every bank profile recognizes in addition to its own, so an
+# unlisted debit/credit header still ends the previous section instead of
+# letting its sign carry over. Headers only match at the start of an undated,
+# amount-free line, so these short words don't hijack transaction rows.
+UNIVERSAL_DEBIT_HEADERS = (
+    "withdrawals",
+    "debits",
+    "other withdrawals",
+    "atm & debit card withdrawals",
+    "atm and debit card withdrawals",
+    "card purchases",
+    "debit card purchases",
+)
+UNIVERSAL_CREDIT_HEADERS = (
+    "deposits",
+    "credits",
+    "other deposits",
+    "other credits",
+    "additions",
+)
+
+# Credit card statements replace the bank profile's debit/credit headers:
+# on a card, "Payments" are credits to the account, not expenses.
+CARD_DEBIT_HEADERS = (
+    "purchases",
+    "purchases and adjustments",
+    "transactions",
+    "fees",
+    "fees charged",
+    "interest charged",
+    "cash advances",
+)
+CARD_CREDIT_HEADERS = (
+    "payments",
+    "credits",
+    "payments and credits",
+    "payments and other credits",
+    "payments, credits and adjustments",
+    "refunds",
+)
+
 GENERIC = LayoutProfile(
     id="generic",
     match_keywords=(),

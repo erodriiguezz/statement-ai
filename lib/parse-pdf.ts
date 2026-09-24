@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import type { Transaction } from "@/lib/types";
+import type { ParseResult, Transaction } from "@/lib/types";
 
 const PARSER_SCRIPT = join(process.cwd(), "parser", "parse_statement.py");
 
@@ -27,7 +27,7 @@ function resolveParserApiKey(): string | null {
 export async function parsePdfBuffer(
   buffer: Buffer,
   filename: string,
-): Promise<Transaction[]> {
+): Promise<ParseResult> {
   const serviceUrl = resolveParserServiceUrl();
   if (serviceUrl) {
     return parsePdfViaRemoteService(buffer, filename, serviceUrl);
@@ -60,7 +60,7 @@ async function parsePdfViaRemoteService(
   buffer: Buffer,
   filename: string,
   serviceUrl: string,
-): Promise<Transaction[]> {
+): Promise<ParseResult> {
   const apiKey = resolveParserApiKey();
   if (!apiKey) {
     throw new Error(
@@ -120,6 +120,7 @@ async function parsePdfViaRemoteService(
 
       const payload = (await response.json().catch(() => ({}))) as {
         transactions?: Transaction[];
+        warnings?: string[];
         detail?: string | Array<{ msg?: string }>;
         error?: string;
       };
@@ -140,7 +141,10 @@ async function parsePdfViaRemoteService(
         );
       }
 
-      return payload.transactions ?? [];
+      return {
+        transactions: payload.transactions ?? [],
+        warnings: payload.warnings ?? [],
+      };
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
         throw new Error("Parser service timed out after 120s.");
@@ -199,7 +203,7 @@ function sleep(ms: number): Promise<void> {
 async function parsePdfViaLocalPython(
   buffer: Buffer,
   filename: string,
-): Promise<Transaction[]> {
+): Promise<ParseResult> {
   const tempDir = await mkdtemp(join(tmpdir(), "statement-ai-"));
   const pdfPath = join(tempDir, filename.replace(/[^\w.-]/g, "_"));
 
@@ -209,6 +213,7 @@ async function parsePdfViaLocalPython(
     const stdout = await runPythonParser(pdfPath);
     const parsed = JSON.parse(stdout) as {
       transactions?: Transaction[];
+      warnings?: string[];
       error?: string;
     };
 
@@ -216,7 +221,10 @@ async function parsePdfViaLocalPython(
       throw new Error(parsed.error);
     }
 
-    return parsed.transactions ?? [];
+    return {
+      transactions: parsed.transactions ?? [],
+      warnings: parsed.warnings ?? [],
+    };
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
@@ -263,8 +271,9 @@ function runPythonParser(pdfPath: string): Promise<string> {
   });
 }
 
-export async function parsePdfFiles(files: File[]): Promise<Transaction[]> {
+export async function parsePdfFiles(files: File[]): Promise<ParseResult> {
   const allTransactions: Transaction[] = [];
+  const allWarnings: string[] = [];
 
   for (const file of files) {
     if (!file.name.toLowerCase().endsWith(".pdf")) {
@@ -272,14 +281,18 @@ export async function parsePdfFiles(files: File[]): Promise<Transaction[]> {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const transactions = await parsePdfBuffer(buffer, file.name);
+    const { transactions, warnings } = await parsePdfBuffer(buffer, file.name);
     allTransactions.push(...transactions);
+    allWarnings.push(...warnings.map((warning) => `${file.name}: ${warning}`));
   }
 
-  return allTransactions.sort((a, b) => a.date.localeCompare(b.date));
+  return {
+    transactions: allTransactions.sort((a, b) => a.date.localeCompare(b.date)),
+    warnings: allWarnings,
+  };
 }
 
-export async function readPdfFromPath(pdfPath: string): Promise<Transaction[]> {
+export async function readPdfFromPath(pdfPath: string): Promise<ParseResult> {
   const buffer = await readFile(pdfPath);
   const filename = pdfPath.split("/").pop() ?? "statement.pdf";
   return parsePdfBuffer(buffer, filename);

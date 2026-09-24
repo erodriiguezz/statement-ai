@@ -12,6 +12,7 @@ from .detect import extract_digital_page_text, page_needs_ocr, page_text_char_co
 from .normalize import extract_statement_year
 from .ocr import OcrUnavailableError, ocr_page
 from .profiles import LayoutProfile
+from .reconcile import extract_statement_totals, is_credit_card_statement, reconcile
 from .text import parse_transactions_from_text
 
 
@@ -66,6 +67,22 @@ def parse_statement(
     profile_id: Optional[str] = None,
     force_ocr: bool = False,
 ) -> list[dict]:
+    return parse_statement_with_checks(
+        pdf_path, profile_id=profile_id, force_ocr=force_ocr
+    )["transactions"]
+
+
+def parse_statement_with_checks(
+    pdf_path: Path,
+    *,
+    profile_id: Optional[str] = None,
+    force_ocr: bool = False,
+) -> dict:
+    """Parse a statement and reconcile it against its printed totals.
+
+    Returns {"transactions", "warnings", "reconciled"}; ``reconciled`` is None
+    when the statement prints no balances or totals to check against.
+    """
     pdf_path = Path(pdf_path)
     if not pdf_path.exists():
         raise ParseError(f"File not found: {pdf_path}")
@@ -101,7 +118,16 @@ def parse_statement(
             "or OCR quality may be too low."
         )
 
-    return transactions
+    reconciled, warnings = reconcile(
+        transactions,
+        extract_statement_totals(text),
+        credit_card=is_credit_card_statement(text),
+    )
+    return {
+        "transactions": transactions,
+        "warnings": warnings,
+        "reconciled": reconciled,
+    }
 
 
 def parse_text(

@@ -9,13 +9,13 @@ import os
 import tempfile
 import threading
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
 from extract.ocr import OcrUnavailableError, ocr_status
-from extract.pipeline import ParseError, parse_statement
+from extract.pipeline import ParseError, parse_statement_with_checks
 
 app = FastAPI(title="Statement AI Parser", version="1.0.0")
 
@@ -38,10 +38,10 @@ def require_api_key(
         raise HTTPException(status_code=403, detail="Invalid API key.")
 
 
-def _parse_with_lock(pdf_path: Path) -> List[dict]:
+def _parse_with_lock(pdf_path: Path) -> Dict[str, object]:
     with _PARSE_LOCK:
         try:
-            return parse_statement(pdf_path)
+            return parse_statement_with_checks(pdf_path)
         finally:
             gc.collect()
 
@@ -101,13 +101,13 @@ async def parse_pdf(
 
         # Run sync OCR/pdf work off the event loop so /health stays responsive.
         try:
-            transactions = await asyncio.to_thread(_parse_with_lock, tmp_path)
+            result = await asyncio.to_thread(_parse_with_lock, tmp_path)
         except OcrUnavailableError as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
         except ParseError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-        return JSONResponse({"transactions": transactions})
+        return JSONResponse(result)
     except HTTPException:
         raise
     except Exception as exc:  # noqa: BLE001

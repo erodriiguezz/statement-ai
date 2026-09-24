@@ -29,7 +29,7 @@ interface UploadStepProps {
   onSelectedFilesChange: (files: SelectedFile[]) => void;
   /** True when selectedFiles exactly matches the set already analysed into transactions. */
   alreadyAnalyzed: boolean;
-  onComplete: (transactions: Transaction[]) => void;
+  onComplete: (transactions: Transaction[], warnings: string[]) => void;
   onContinue: () => void;
 }
 
@@ -102,6 +102,7 @@ export default function UploadStep({
 
       const payload = (await response.json()) as {
         transactions?: Transaction[];
+        warnings?: string[];
         error?: string;
       };
 
@@ -109,7 +110,7 @@ export default function UploadStep({
         throw new Error(payload.error ?? "Failed to parse statements.");
       }
 
-      onComplete(payload.transactions ?? []);
+      onComplete(payload.transactions ?? [], payload.warnings ?? []);
     } catch (analyzeError) {
       setError(
         analyzeError instanceof Error
