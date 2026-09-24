@@ -70,7 +70,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const transactions = await parsePdfFiles(files);
+    const { transactions, warnings } = await parsePdfFiles(files);
 
     if (transactions.length === 0) {
       return NextResponse.json(
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ transactions });
+    return NextResponse.json({ transactions, warnings });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Failed to parse PDF statements.";

@@ -13,7 +13,7 @@ if str(PARSER_DIR) not in sys.path:
     sys.path.insert(0, str(PARSER_DIR))
 
 from extract.ocr import OcrUnavailableError  # noqa: E402
-from extract.pipeline import ParseError, parse_statement  # noqa: E402
+from extract.pipeline import ParseError, parse_statement_with_checks  # noqa: E402
 
 
 def main() -> None:
@@ -27,8 +27,8 @@ def main() -> None:
         profile_id = sys.argv[2].split("=", 1)[1].strip() or None
 
     try:
-        transactions = parse_statement(pdf_path, profile_id=profile_id)
-        print(json.dumps({"transactions": transactions}))
+        result = parse_statement_with_checks(pdf_path, profile_id=profile_id)
+        print(json.dumps(result))
     except (ParseError, OcrUnavailableError) as exc:
         print(json.dumps({"error": str(exc)}))
         sys.exit(1)

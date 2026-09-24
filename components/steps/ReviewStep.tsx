@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 
 import AnalyzingOverlay from "@/components/AnalyzingOverlay";
 import TransactionTable from "@/components/TransactionTable";
@@ -20,6 +20,8 @@ const SCHEDULE_C_MESSAGES = [
 
 interface ReviewStepProps {
   transactions: Transaction[];
+  /** Statements whose parsed rows don't match their printed totals. */
+  parseWarnings: string[];
   onTransactionsChange: (transactions: Transaction[]) => void;
   businessName: string;
   onBusinessNameChange: (businessName: string) => void;
@@ -28,6 +30,7 @@ interface ReviewStepProps {
 
 export default function ReviewStep({
   transactions,
+  parseWarnings,
   onTransactionsChange,
   businessName,
   onBusinessNameChange,
@@ -91,6 +94,28 @@ export default function ReviewStep({
           AI will categorize these verified transactions into Schedule C lines.
         </p>
       </header>
+
+      {parseWarnings.length > 0 && (
+        <div
+          role="alert"
+          className="rounded-2xl border border-warning/25 bg-[#fff8eb] px-4 py-3 text-sm text-warning"
+        >
+          <p className="flex items-center gap-2 font-semibold">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            Some statements may not have been read correctly
+          </p>
+          <p className="mt-1">
+            Check these statements for missing rows or amounts with the wrong
+            sign (income shown as an expense, or the reverse) before
+            continuing.
+          </p>
+          <ul className="mt-2 list-disc space-y-1 pl-5">
+            {parseWarnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="max-w-md">
         <label

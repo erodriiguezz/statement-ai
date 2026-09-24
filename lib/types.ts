@@ -7,6 +7,13 @@ export interface Transaction {
   category?: string;
 }
 
+/** Transactions from one or more statements plus reconciliation warnings. */
+export interface ParseResult {
+  transactions: Transaction[];
+  /** Human-readable mismatches between parsed rows and printed statement totals. */
+  warnings: string[];
+}
+
 export interface ScheduleCLineItem {
   line: string;
   label: string;
