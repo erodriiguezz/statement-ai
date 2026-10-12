@@ -47,3 +47,18 @@ parser/**/__pycache__/
 parser/.pytest_cache/
 parser/fixtures/raw/*
 !parser/fixtures/raw/.gitkeep
+
+# Claude SDLC — per-developer, per-branch working state
+.claude/budget/
+.claude/artifacts/
+.claude/test-report.json
+.claude/settings.local.json
+coverage/
+review/
+test-results/
+playwright-report/
+.worktrees/
+
+# Client statements are never committed (README SOP); only invented test PDFs.
+*.pdf
+!parser/fixtures/synthetic/*.pdf

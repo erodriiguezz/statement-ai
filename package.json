@@ -6,7 +6,11 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sdlc:verify": "./scripts/sdlc/verify.sh",
+    "sdlc:test": "./scripts/sdlc/test.sh",
+    "pr:size": "node scripts/sdlc/pr-size.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "dotenv": "^17.3.1",
@@ -17,6 +21,7 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@tailwindcss/postcss": "^4.2.4",
     "@types/node": "^20",
     "@types/react": "^19",
