@@ -1,0 +1,76 @@
+{
+  "bundleVersion": "1.3.0",
+  "integrationBranch": "main",
+  "productionBranch": "main",
+  "ticketSystem": "github",
+  "verify": "./scripts/sdlc/verify.sh --changed",
+  "test": "./scripts/sdlc/test.sh",
+  "formatter": "none",
+  "webUrl": "http://localhost:3100",
+  "frontendPaths": [
+    "^(app|components)/"
+  ],
+  "budget": {
+    "S": {
+      "tokens": 150000
+    },
+    "M": {
+      "tokens": 500000
+    },
+    "L": {
+      "tokens": 1500000
+    }
+  },
+  "loopBreaker": {
+    "stallRuns": 5
+  },
+  "prSize": {
+    "maxLines": 400
+  },
+  "guard": {
+    "protectedBranches": [
+      "main"
+    ],
+    "blockedCommands": [
+      "vercel --prod",
+      "vercel deploy",
+      "npm publish",
+      "drizzle-kit push"
+    ],
+    "secretFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  "scopeGuardrail": {
+    "keywords": []
+  },
+  "generated": [
+    ".github/workflows/pr-size.yml",
+    ".github/workflows/claude-review.yml",
+    ".github/workflows/claude-on-demand.yml",
+    ".github/workflows/release.yml",
+    ".github/sdlc/tech-lead-review/SKILL.md",
+    ".github/sdlc/tech-lead-review/template.html",
+    "scripts/sdlc/lib.mjs",
+    "scripts/sdlc/pr-size.mjs",
+    "scripts/sdlc/ac-coverage.mjs",
+    "scripts/sdlc/diff-coverage.mjs",
+    "scripts/sdlc/api-smoke.mjs",
+    "scripts/sdlc/screenshots.mjs",
+    "scripts/sdlc/screenshots-md.mjs",
+    "scripts/sdlc/render-report.mjs",
+    "scripts/sdlc/context-refresh.sh",
+    ".github/workflows/conventions.yml",
+    "scripts/sdlc/conventions.mjs",
+    "scripts/sdlc/evidence.mjs",
+    "scripts/sdlc/metrics.mjs"
+  ],
+  "requiredChecks": [
+    "pr-size",
+    "conventions",
+    "secret-scan",
+    "runtime-checks",
+    "claude-review"
+  ]
+}

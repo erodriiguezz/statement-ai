@@ -1,0 +1,3 @@
+# Append-only logs merge by keeping both sides' lines (Layer 9: no bottlenecks across branches).
+CHANGELOG.md                  merge=union
+docs/context/journal/*.md     merge=union

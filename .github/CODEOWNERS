@@ -1,0 +1,3 @@
+# Shared context and process files are reviewed like code (docs/claude-sdlc/SETUP.md).
+# Enable "Require review from Code Owners" in the main ruleset once a second reviewer joins.
+*                        @erodriiguezz

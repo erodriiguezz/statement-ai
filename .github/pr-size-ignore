@@ -1,0 +1,17 @@
+# Paths not counted toward PR size (still reviewed). Glob syntax: * ** ?
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+e2e/**
+**/__snapshots__/**
+package-lock.json
+**/package-lock.json
+drizzle/**
+parser/tests/**
+parser/fixtures/**
+**/next-env.d.ts
+.claude/plans/**
+docs/context/changes/**
+docs/context/journal/**
+docs/releases/**
+CHANGELOG.md

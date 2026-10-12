@@ -1,0 +1,15 @@
+{
+  "$comment": "Checks run by scripts/sdlc/api-smoke.mjs against the local stack (test.sh, port 3100). Add one per changed endpoint; set \"ac\" to the criterion it proves (e.g. \"AC-47.2\"). PDF uploads to /api/parse are covered in e2e/upload-flow.spec.ts, since these checks only send JSON.",
+  "checks": [
+    { "name": "web home renders", "url": "http://localhost:3100/", "expectBodyIncludes": "Statement" },
+    { "name": "parser-health reports local mode", "url": "http://localhost:3100/api/parser-health", "expectBodyIncludes": "\"mode\":\"local\"" },
+    {
+      "name": "analyze rejects an empty transaction list",
+      "url": "http://localhost:3100/api/analyze",
+      "method": "POST",
+      "headers": { "content-type": "application/json" },
+      "body": { "transactions": [] },
+      "expectStatus": 400
+    }
+  ]
+}
