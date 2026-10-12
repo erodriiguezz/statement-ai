@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Loader2 } from "lucide-react";
 
+import { useMounted } from "@/lib/use-mounted";
+
 const MESSAGE_INTERVAL_MS = 2200;
 
 interface AnalyzingOverlayProps {
@@ -13,11 +15,7 @@ interface AnalyzingOverlayProps {
 
 export default function AnalyzingOverlay({ title, messages }: AnalyzingOverlayProps) {
   const [messageIndex, setMessageIndex] = useState(0);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   useEffect(() => {
     const interval = setInterval(() => {

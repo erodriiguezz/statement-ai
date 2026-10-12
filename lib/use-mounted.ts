@@ -1,0 +1,12 @@
+import { useSyncExternalStore } from "react";
+
+const subscribe = () => () => {};
+
+/** False during SSR and hydration, true once rendering on the client (safe for portals). */
+export function useMounted(): boolean {
+  return useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
+}

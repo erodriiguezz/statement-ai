@@ -4,6 +4,8 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { useMounted } from "@/lib/use-mounted";
+
 interface DateCellProps {
   value: string;
   onChange: (value: string) => void;
@@ -94,20 +96,10 @@ export default function DateCell({ value, onChange }: DateCellProps) {
   const [open, setOpen] = useState(false);
   const [view, setView] = useState(() => parseIso(value));
   const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const rootRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (open) {
-      setView(parseIso(value));
-    }
-  }, [open, value]);
 
   useLayoutEffect(() => {
     if (!open || !rootRef.current) {
@@ -289,7 +281,13 @@ export default function DateCell({ value, onChange }: DateCellProps) {
       <button
         type="button"
         id={labelId}
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => {
+          // Each time the calendar opens, show the month of the current value.
+          if (!open) {
+            setView(parseIso(value));
+          }
+          setOpen(!open);
+        }}
         aria-haspopup="dialog"
         aria-expanded={open}
         className="flex w-full items-center rounded-xl px-0 py-2 text-left text-sm text-ink outline-none transition-colors hover:text-accent focus-visible:ring-2 focus-visible:ring-accent/30"
